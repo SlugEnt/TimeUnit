@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyVersion>1.0.0.2</AssemblyVersion>
+    <FileVersion>1.0.0.2</FileVersion>
+    <Title>TimeUnit</Title>
+    <PackageId>SlugEnt.TimeUnit</PackageId>
+    <Authors>Scott Herrmann</Authors>
+    <Company>Slug Enterprises</Company>
+
+    <Description>A class for representing a unit of time in the form of a number and a suffix indicating the time period.  For Example 6s.</Description>
+
+    <Copyright>Scott Herrmann 2018</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>time;guid</PackageTags>
+    <PackageProjectUrl>https://bitbucket.org/wshpersonal/timeunit/wiki/Home</PackageProjectUrl>
+    <RepositoryUrl>https://bitbucket.org/wshpersonal/timeunit/src/master/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+
+    <PackageReleaseNotes>This is a Test Upload of the Nuget</PackageReleaseNotes>
+  </PropertyGroup>
+</Project>
