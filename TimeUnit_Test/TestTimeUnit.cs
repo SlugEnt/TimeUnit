@@ -293,8 +293,10 @@ namespace SlugEnt.UnitTest
 		[Test]
 		[TestCase(60, "1m")]
 		[TestCase(180, "3m")]
-		[TestCase(3600, "1h")]
-		[TestCase(5400, "90m")]
+        [TestCase(600, "10m")]
+        [TestCase(3600, "1h")]
+        [TestCase(5399, "5399s")]
+        [TestCase(5400, "90m")]
 		[TestCase(7200, "2h")]
 		[TestCase(86400, "1d")]
 		[TestCase(108000, "30h")]
@@ -304,7 +306,7 @@ namespace SlugEnt.UnitTest
 		[TestCase(4000, "4000s")]
 		[TestCase(265000, "265000s")]
 
-		public void LargeTimeValueReturns_Correctly(long seconds, string result) {
+		public void ValueAsWholeNumber_WorksCorrectly(long seconds, string result) {
 			TimeUnit a = new TimeUnit(seconds);
 			Assert.AreEqual(result, a.ValueAsWholeNumber);
 		}
@@ -478,6 +480,59 @@ namespace SlugEnt.UnitTest
 			Assert.AreEqual(result, c.Value);
 		}
 
+
+
+        // Tests that we can set a TimeUnit = string value (as long as value is valid)
+        [Test]
+        public void ImplicitStringSet_Success () {
+            string timeS1 = "9m";
+            TimeUnit t1 = timeS1;
+
+            Assert.AreEqual(timeS1,t1.Value, "A10:  Expected the two values to be the same.  They are not.");
+        }
+
+
+        // Test that we can implicitly set a string to a TimeUnit.  I.E.  string s = timeUnitVar;
+        [Test]
+        public void ImplicitTimeUnitSetViaString_Success () {
+            TimeUnit t1 = new TimeUnit("2h");
+            string s1 = t1;
+
+            Assert.AreEqual(t1.Value,s1,"A10:  Expected the two values to be the same.  They are not.");
+        }
+
+
+        // Test that we can set a TimeUnit = int value.
+        [Test]
+        public void ImplicitIntSet_Success () {
+            int time1 = 60;
+            TimeUnit t1 = time1;
+
+            Assert.AreEqual(time1,t1.InSecondsLong,"A10:  Expected the number of seconds to be set to the value passed in.");
+        }
+
+
+        // Test that we can set an int value = TimeUnit value.
+        [Test]
+        public void ImplicitTimeUnitSetViaInt_Success () {
+            TimeUnit t1 = new TimeUnit("15m");
+            int int1 = t1;
+
+            Assert.AreEqual(t1.InSecondsLong,int1,"A10:  Expected the 2 values to be the same.");
+        }
+
+
+        // Validate that we get ArugmentException errors if passing an invalid string or integer value.
+        [Test]
+        public void ImplicitSet_Errors () {
+            string time1 = "9g";
+            TimeUnit t1;
+
+            Assert.Throws<ArgumentException> (() => t1 = time1,"A10:  Expected to see an ArgumentException error.  Did not receive it.");
+
+            int time2 = -4;
+            Assert.Throws<ArgumentException>(() => t1 = time2, "A20:  Expected to see an ArgumentException error.  Did not receive it.");
+        }
 
 
 		public class TimeUnitDataClass

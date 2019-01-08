@@ -53,8 +53,7 @@ namespace SlugEnt
 	/// <example>6m - 6 minutes</example>
 	/// <example>14h - 14 hours</example>
 	/// <example>104d - 104 days</example>
-	public struct TimeUnit
-	{
+	public struct TimeUnit : IEquatable<TimeUnit>, IComparable<TimeUnit>{
 		/// <summary>
 		/// We store the base unit in seconds.  We use a double because the TimeSpan conversion functions all require doubles, so this avoids lots of casting to double.
 		/// </summary>
@@ -63,7 +62,7 @@ namespace SlugEnt
 		/// <summary>
 		/// The TimeUnitType that this represents.
 		/// </summary>
-		private TimeUnitTypes unitType;
+		private TimeUnitTypes _unitType;
 
 
 
@@ -72,8 +71,9 @@ namespace SlugEnt
 		/// </summary>
 		/// <param name="seconds"></param>
 		public TimeUnit(long seconds) {
+            if (seconds < 0) { throw new ArgumentException("TimeUnits cannot be negative numbers.");}
 			_seconds = (double)seconds;
-			unitType = TimeUnitTypes.Seconds;
+			_unitType = TimeUnitTypes.Seconds;
 		}
 
 
@@ -118,23 +118,23 @@ namespace SlugEnt
 			// Validate the unit of time is correct.
 			switch (timeIncrement) {
 				case 'd':
-					unitType = TimeUnitTypes.Days;
+					_unitType = TimeUnitTypes.Days;
 					_seconds = ConvertDaysToSeconds(valNum);
 					break;
 				case 'm':
-					unitType = TimeUnitTypes.Minutes;
+					_unitType = TimeUnitTypes.Minutes;
 					_seconds = ConvertMinutesToSeconds(valNum);
 					break;
 				case 'h':
-					unitType = TimeUnitTypes.Hours;
+					_unitType = TimeUnitTypes.Hours;
 					_seconds = ConvertHoursToSeconds(valNum);
 					break;
 				case 's':
-					unitType = TimeUnitTypes.Seconds;
+					_unitType = TimeUnitTypes.Seconds;
 					_seconds = valNum;
 					break;
 				case 'w':
-					unitType = TimeUnitTypes.Weeks;
+					_unitType = TimeUnitTypes.Weeks;
 					_seconds = ConvertDaysToSeconds((valNum * 7));
 					break;
 				default:
@@ -149,7 +149,7 @@ namespace SlugEnt
 		/// </summary>
 		/// <returns>String representing the long textual value.</returns>
 		public override string ToString () {
-			string rs = String.Format("{0} {1}", GetUnits(unitType), unitType.ToString());
+			string rs = String.Format("{0} {1}", GetUnits(_unitType), _unitType.ToString());
 			return rs;
 		}
 
@@ -162,7 +162,7 @@ namespace SlugEnt
 		public string Value
 		{
 			get {
-				string rs = String.Format("{0}{1}", GetUnits(unitType), GetUnitTypeAbbrev());
+				string rs = String.Format("{0}{1}", GetUnits(_unitType), GetUnitTypeAbbrev());
 				return rs;
 			}
 		}
@@ -231,12 +231,12 @@ namespace SlugEnt
 		/// </summary>
 		public double ValueAsNumeric
 		{
-			get { return GetUnits(unitType); }
+			get { return GetUnits(_unitType); }
 		}
 
 
 
-
+        //TODO - Do we want to allow changing of the unit type character or should it stay what it was when initially set.
 		/// <summary>
 		/// Sets the UnitType field to the appropriate value based upon its string representation.
 		/// It does not convert or change the seconds property.
@@ -246,19 +246,19 @@ namespace SlugEnt
 			// Validate the unit of time is correct.
 			switch (timeIncrement) {
 				case 'd':
-					unitType = TimeUnitTypes.Days;
+					_unitType = TimeUnitTypes.Days;
 					break;
 				case 'm':
-					unitType = TimeUnitTypes.Minutes;
+					_unitType = TimeUnitTypes.Minutes;
 					break;
 				case 'h':
-					unitType = TimeUnitTypes.Hours;
+					_unitType = TimeUnitTypes.Hours;
 					break;
 				case 's':
-					unitType = TimeUnitTypes.Seconds;
+					_unitType = TimeUnitTypes.Seconds;
 					break;
 				case 'w':
-					unitType = TimeUnitTypes.Weeks;
+					_unitType = TimeUnitTypes.Weeks;
 					break;
 				default:
 					throw new ArgumentException("Invalid TimeUnitType specified.  Must be one of s,m,h,d,w.");
@@ -294,7 +294,7 @@ namespace SlugEnt
 		#region "Object Overrides"
 
 		// Compare if the same.  Considered the same if number of seconds is same, does not matter what the TimeUnit type is.
-		public static bool operator == (TimeUnit x, TimeUnit y) {
+/*		public static bool operator == (TimeUnit x, TimeUnit y) {
 			if (x._seconds == y._seconds) {	return true; }
 			else { return false; }
 		}
@@ -306,7 +306,7 @@ namespace SlugEnt
 			if (x._seconds != y._seconds) { return true; }
 			else { return false; }
 		}
-
+        */
 
 		public override bool Equals(object obj) {
 			if (!(obj is TimeUnit) ) { return false; }
@@ -322,17 +322,26 @@ namespace SlugEnt
 			return (int)_seconds;
 		}
 
-		#endregion
+
+        // Math comparison functions
+        public static bool operator == (TimeUnit x, TimeUnit y) { return x._seconds == y._seconds; }
+        public static bool operator != (TimeUnit x, TimeUnit y) { return x._seconds != y._seconds; }
+        public static bool operator >(TimeUnit x, TimeUnit y) { return x.CompareTo(y) > 0; }
+        public static bool operator <(TimeUnit x, TimeUnit y) { return x.CompareTo(y) < 0; }
+        public static bool operator >=(TimeUnit x, TimeUnit y) { return x.CompareTo(y) >= 0; }
+        public static bool operator <=(TimeUnit x, TimeUnit y) { return x.CompareTo(y) <= 0; }
+
+        #endregion
 
 
 
-		#region "InFX Functions"     
+        #region "InFX Functions"     
 
 
-		/// <summary>
-		/// Returns the number of seconds this TimeUnit represents in Double format.
-		/// </summary>
-		public double InSecondsAsDouble  {
+        /// <summary>
+        /// Returns the number of seconds this TimeUnit represents in Double format.
+        /// </summary>
+        public double InSecondsAsDouble  {
 			get {
 				return GetUnits(TimeUnitTypes.Seconds);
 			}
@@ -463,7 +472,7 @@ namespace SlugEnt
 		/// </summary>
 		/// <returns>String with single character representing the Unit Type.</returns>
 		private string GetUnitTypeAbbrev () {
-			return GetTimeUnitTypeAsString(unitType);
+			return GetTimeUnitTypeAsString(_unitType);
 		}
 
 
@@ -551,7 +560,7 @@ namespace SlugEnt
 			c._seconds = a._seconds - b._seconds;
 			if (c._seconds < 0) {
 				c._seconds = 0;
-				c.unitType = TimeUnitTypes.Seconds;
+				c._unitType = TimeUnitTypes.Seconds;
 			}
 			else {
 				string val = c.ValueAsWholeNumber;
@@ -591,6 +600,7 @@ namespace SlugEnt
 
 
 		#region "Math Functions"
+        //TODO - If this object is trully immutable these need to return a new TimeUnit object and not update the current.
 		public void AddSeconds (long seconds) {
 			if (seconds < 0) { SubtractSeconds(-seconds); }
 			else { _seconds += seconds; }
@@ -724,6 +734,38 @@ namespace SlugEnt
 		public static double ConvertDaysToMilliseconds(double days) {
 			return TimeSpan.FromDays(days).TotalMilliseconds;
 		}
-		#endregion
-	}
+        #endregion
+
+
+
+        /// <summary>
+        /// For IEquatable Interface
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool Equals(TimeUnit other)
+        {
+            return (_seconds.Equals(other._seconds));
+        }
+
+
+        /// <summary>
+        /// Used for IComparable Interface
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public int CompareTo(TimeUnit other) {
+            return _seconds.CompareTo (other);
+        }
+
+
+        //TODO - This is where I am at.
+        // Allow direct setting to/from string
+        public static implicit operator string(TimeUnit timeUnit) { return timeUnit.Value; }
+        public static implicit operator TimeUnit(string s) { return new TimeUnit(s); }
+
+        // Allow direct setting to/from an integer
+        public static implicit operator int (TimeUnit timeUnit) { return (int) timeUnit._seconds; }
+        public static implicit operator TimeUnit(int s) {  return new TimeUnit(s);}
+    }
 }
