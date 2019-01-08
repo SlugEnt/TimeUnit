@@ -21,8 +21,6 @@ using System.Collections;
 using SlugEnt;
 
 
-namespace SlugEnt.UnitTest
-{
 	[Parallelizable]
 	public class TestTimeUnit
 	{
@@ -319,7 +317,7 @@ namespace SlugEnt.UnitTest
 		[TestCase("2d", 2, "d")]
 		[TestCase("205h", 205, "h")]
 
-		public void DateMathAddition_Works(string timeUnitValue, long number, string unit) {
+		public void AddToDate_Works(string timeUnitValue, long number, string unit) {
 			TimeUnit a = new TimeUnit(timeUnitValue);
 			long seconds = a.InSecondsLong;
 
@@ -354,7 +352,7 @@ namespace SlugEnt.UnitTest
 		[TestCase("60m", 60, "m")]
 		[TestCase("2d", 2, "d")]
 		[TestCase("205h", 205, "h")]
-		public void DateMathSubtraction_Works(string timeUnitValue, long number, string unit) {
+		public void SubtractFromDate_Works(string timeUnitValue, long number, string unit) {
 			TimeUnit a = new TimeUnit(timeUnitValue);
 			long seconds = a.InSecondsLong;
 
@@ -396,60 +394,101 @@ namespace SlugEnt.UnitTest
 		[TestCase("2h", "s", 7201)]
 		[TestCase("45s", "s", 47)]
 		[TestCase("10m", "s", 601)]
-		public void ValidateSubtractionFunctionsWithNegativeValues(string timeUnitValue, string unit, long value) {
+		public void SubtractionFunctionsWithNegativeValues(string timeUnitValue, string unit, long value) {
 			TimeUnit a = new TimeUnit(timeUnitValue);
+			TimeUnit b;
+
 			switch (unit) {
 				case "m":
-					a.SubtractMinutes(value);
+					b = a.SubtractMinutes(value);
 					break;
 				case "d":
-					a.SubtractDays(value);
+					b = a.SubtractDays(value);
 					break;
 				case "h":
-					a.SubtractHours(value);
+					b = a.SubtractHours(value);
 					break;
 				default:
-					a.SubtractSeconds(value);
+					b = a.SubtractSeconds(value);
 					break;
 
 			}
-			Assert.AreEqual(0, a.ValueAsNumeric);
+			Assert.AreEqual(0, b.ValueAsNumeric);
 		}
 
 
 
 		[Test]
 		[TestCase("60m", "m", 1, "61m")]
-		[TestCase("60m", "m", -90,"0m")]
+		[TestCase("12d", "d", 3, "15d")]
+		[TestCase("7d", "d", 1, "8d")]
+		[TestCase("10d", "d", 4, "2w")]
+		[TestCase("60m", "m", 60, "2h")]
+		[TestCase("60m", "m", 90, "150m")]
+		[TestCase("60m", "m", -90,"0s")]
+		[TestCase("50s", "s", 10, "1m")]
+		[TestCase("50s", "s", 11, "61s")]
 		[TestCase("450s", "s", -9000,"0s")]
-		[TestCase("35h", "h", -72,"0h")]
-		[TestCase("2h", "s", -7201,"0h")]
+		[TestCase("35h", "h", -72,"0s")]
+		[TestCase("2h", "s", -7201,"0s")]
 		[TestCase("45s", "s", -47,"0s")]
-		[TestCase("10m", "s", -601,"0m")]
+		[TestCase("10m", "s", -601,"0s")]
 
 		public void ValidateAdditionFunctions(string timeUnitValue, string unit, long value,string result) {
 			TimeUnit a = new TimeUnit(timeUnitValue);
+			TimeUnit b;
 			switch (unit) {
 				case "m":
-					a.AddMinutes(value);
+					b = a.AddMinutes(value);
 					break;
 				case "d":
-					a.AddDays(value);
+					b = a.AddDays(value);
 					break;
 				case "h":
-					a.AddHours(value);
+					b = a.AddHours(value);
 					break;
 				default:
-					a.AddSeconds(value);
+					b = a.AddSeconds(value);
 					break;
 
 			}
-			Assert.AreEqual(result, a.Value);
+			Assert.AreEqual(result, b.Value);
 		}
 
 
-		// Adding 2 TimeUnits
-		[Test]
+
+
+		[TestCase("10m", "m", 6, "4m")]
+		[TestCase("1h", "m", 16, "44m")]
+		[TestCase("3d", "d", 2, "1d")]
+		[TestCase("2w", "d", 2, "12d")]
+		[TestCase("140s", "s", 20, "2m")]
+		[TestCase("14h", "h", 3, "11h")]
+	public void SubtractionFunctionsWork(string timeUnitValue, string unit, long value, string result) {
+			TimeUnit a = new TimeUnit(timeUnitValue);
+			TimeUnit b;
+			switch (unit) {
+				case "m":
+					b = a.SubtractMinutes(value);
+					break;
+				case "d":
+					b = a.SubtractDays(value);
+					break;
+				case "h":
+					b = a.SubtractHours(value);
+					break;
+				default:
+					b = a.SubtractSeconds(value);
+					break;
+
+			}
+			Assert.AreEqual(result, b.Value);
+		}
+
+
+
+	// Adding 2 TimeUnits
+	[Test]
 		[TestCase("60s","59m","1h")]
 		[TestCase("60s", "60s", "2m")]
 		[TestCase("12s", "14s", "26s")]
@@ -565,4 +604,4 @@ namespace SlugEnt.UnitTest
 		}
 
 	}
-}
+

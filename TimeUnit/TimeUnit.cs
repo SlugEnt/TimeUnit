@@ -57,12 +57,12 @@ namespace SlugEnt
 		/// <summary>
 		/// We store the base unit in seconds.  We use a double because the TimeSpan conversion functions all require doubles, so this avoids lots of casting to double.
 		/// </summary>
-		private double _seconds;
+		private readonly double _seconds;
 
 		/// <summary>
 		/// The TimeUnitType that this represents.
 		/// </summary>
-		private TimeUnitTypes _unitType;
+		private readonly TimeUnitTypes _unitType;
 
 
 
@@ -196,8 +196,8 @@ namespace SlugEnt
 		}
 
 
-
-        //TODO - Do we want to allow changing of the unit type character or should it stay what it was when initially set.
+/* This was never called and the field value should never be able to be changed.
+        ///  Do we want to allow changing of the unit type character or should it stay what it was when initially set.
 		/// <summary>
 		/// Sets the UnitType field to the appropriate value based upon its string representation.
 		/// It does not convert or change the seconds property.
@@ -226,7 +226,7 @@ namespace SlugEnt
 			}
 
 		}
-
+*/
 
 
 
@@ -575,31 +575,12 @@ namespace SlugEnt
 		/// </summary>
 		/// <param name="a">1st TimeUnit object</param>
 		/// <param name="b">2nd TimeUnit object</param>
-		/// <returns>Result of subtracting TimeUnit b from TimeUnit a.  Negative values all result in a value of zero.</returns>
+		/// <returns>Result of subtracting TimeUnit b from TimeUnit a.  Negative values all result in a value of 0s.</returns>
 		public static TimeUnit operator- (TimeUnit a, TimeUnit b) {
 			double newSeconds = a._seconds - b._seconds;
 			if ( newSeconds < 0 ) { newSeconds = 0;}
 			string newValue = GetHighestWholeNumberUnitType((long)newSeconds);
 			return (new TimeUnit(newValue));
-/*
-			string newValue = GetHighestWholeNumberUnitType((long)newSeconds);
-			return (new TimeUnit(newValue));
-
-			TimeUnit c = new TimeUnit();
-			c._seconds = a._seconds - b._seconds;
-			if (c._seconds < 0) {
-				c._seconds = 0;
-				c._unitType = TimeUnitTypes.Seconds;
-			}
-			else {
-				string val = c.ValueAsWholeNumber;
-				int len = val.Length;
-				char timeIncrement = val[len - 1];
-				if (c.ValidateUnitTypeCharacter(timeIncrement)) { c.SetUnitTypeCharacter(timeIncrement); }
-			}
-
-			return c;
-*/
 		}
 
 
@@ -630,48 +611,74 @@ namespace SlugEnt
 
 
 		#region "Math Functions"
-        //TODO - If this object is trully immutable these need to return a new TimeUnit object and not update the current.
-		public void AddSeconds (long seconds) {
-			if (seconds < 0) { SubtractSeconds(-seconds); }
-			else { _seconds += seconds; }
-		}
-		public void AddMinutes (long minutes) {
-			if (minutes < 0) { SubtractMinutes(-minutes); }
-			else { _seconds += (minutes * 60); }
+
+
+		public TimeUnit AddSeconds (long seconds) {
+			double calcSeconds;
+			if (seconds < 0) { return SubtractSeconds(-seconds); }
+			else { calcSeconds = _seconds + seconds; }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
 		}
 
-		public void AddHours(long hours) {
-			if (hours < 0) { SubtractHours(-hours); }
-			else { _seconds += ConvertHoursToSeconds((double)hours); }
+		public TimeUnit AddMinutes (long minutes) {
+			double calcSeconds;
+			if (minutes < 0) { return SubtractMinutes(-minutes); }
+			else { calcSeconds = _seconds + (minutes * 60); }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
 		}
 
-		public void AddDays (long days) {
-			if (days < 0) { SubtractDays(-days); }
-			else { _seconds += ConvertDaysToSeconds((double)days); }
+		public TimeUnit AddHours(long hours) {
+			double calcSeconds;
+			if (hours < 0) { return SubtractHours(-hours); }
+			else { calcSeconds = _seconds + ConvertHoursToSeconds((double)hours); }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
 		}
 
-		public void SubtractSeconds (long seconds) {
-			if (seconds > _seconds) { _seconds = 0; }
-			else { _seconds -= seconds; }
+		public TimeUnit AddDays (long days) {
+			double calcSeconds;
+			if (days < 0) { return SubtractDays(-days); }
+			else { calcSeconds = _seconds + ConvertDaysToSeconds((double)days); }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
 		}
 
-		public void SubtractMinutes (long minutes) {
+		public TimeUnit SubtractSeconds (long seconds) {
+			double calcSeconds;
+			if (seconds > _seconds) { calcSeconds = 0; }
+			else { calcSeconds = _seconds - seconds; }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
+		}
+
+		public TimeUnit SubtractMinutes (long minutes) {
 			long val = minutes * 60;
-			if (val > _seconds) { _seconds = 0; }
-			else { _seconds -= val; }
+			double calcSeconds;
+			if (val > _seconds) { calcSeconds = 0; }
+			else { calcSeconds = _seconds - val; }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
 		}
 
 
-		public void SubtractHours (long hours) {
+		public TimeUnit SubtractHours (long hours) {
 			double val = ConvertHoursToSeconds ((double)hours);
-			if (val > _seconds) { _seconds = 0; }
-			else { _seconds -= val; }
+			double calcSeconds;
+			if (val > _seconds) { calcSeconds = 0; }
+			else { calcSeconds = _seconds - val; }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
 		}
 
-		public void SubtractDays (long days) {
+		public TimeUnit SubtractDays (long days) {
 			double val = ConvertDaysToSeconds((double)days);
-			if (val > _seconds) { _seconds = 0; }
-			else { _seconds -= val; }
+			double calcSeconds;
+			if (val > _seconds) { calcSeconds = 0; }
+			else {  calcSeconds = _seconds - val; }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
 		}
 
 		#endregion

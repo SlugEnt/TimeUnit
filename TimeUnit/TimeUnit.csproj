@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyVersion>1.1.0.11</AssemblyVersion>
-    <FileVersion>1.1.0.5</FileVersion>
+    <AssemblyVersion>1.1.0.17</AssemblyVersion>
+    <FileVersion>1.1.0.11</FileVersion>
     <Title>TimeUnit</Title>
     <PackageId>SlugEnt.TimeUnit</PackageId>
     <Authors>Scott Herrmann</Authors>
