@@ -455,6 +455,9 @@ namespace SlugEnt.UnitTest
 		[TestCase("12s", "14s", "26s")]
 		[TestCase("23h", "1h", "1d")]
 		[TestCase("29h", "2h", "31h")]
+		[TestCase("4d", "1d", "5d")]
+		[TestCase("4d", "3d", "1w")]
+		[TestCase("2w", "6w", "8w")]
 		public void Adding2TimeUnits_Success (string unitA, string unitB, string result) {
 			TimeUnit a = new TimeUnit(unitA);
 			TimeUnit b = new TimeUnit(unitB);
@@ -473,6 +476,8 @@ namespace SlugEnt.UnitTest
 		[TestCase("23h", "1h", "22h")]
 		[TestCase("29h", "5h", "1d")]
 		[TestCase("4d", "5d", "0s")]
+		[TestCase("24w", "5w", "19w")]
+		[TestCase("1w", "2d", "5d")]
 		public void Subtracting2TimeUnits_Success(string unitA, string unitB, string result) {
 			TimeUnit a = new TimeUnit(unitA);
 			TimeUnit b = new TimeUnit(unitB);

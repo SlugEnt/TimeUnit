@@ -69,10 +69,21 @@ namespace SlugEnt
 		/// <summary>
 		/// Takes a number of seconds and turns it into a TimeUnit value stored as seconds.  Seconds will be the preferred UnitType display.
 		/// </summary>
-		/// <param name="seconds"></param>
+		/// <param name="seconds">The number of seconds the TimeUnit represents</param>
 		public TimeUnit(long seconds) {
             if (seconds < 0) { throw new ArgumentException("TimeUnits cannot be negative numbers.");}
 			_seconds = (double)seconds;
+			_unitType = TimeUnitTypes.Seconds;
+		}
+
+
+		/// <summary>
+		/// Takes a number of seconds (double) and turns it into a TimeUnit value stored as seconds.  Seconds will be the preferred UnitType display.
+		/// </summary>
+		/// <param name="seconds">The number of seconds the TimeUnit represents</param>
+		public TimeUnit(double seconds) {
+			if (seconds < 0) { throw new ArgumentException("TimeUnits cannot be negative numbers."); }
+			_seconds = seconds;
 			_unitType = TimeUnitTypes.Seconds;
 		}
 
@@ -169,59 +180,9 @@ namespace SlugEnt
 
 
 
-		/// <summary>
-		/// Returns the TimeUnit in a value that represents the largest unit value that results in a whole number.  For instance - 360 seconds would return 6m.  359 seconds would return 359 seconds.
-		/// </summary>
-		public string ValueAsWholeNumber
-		{
-			get {
-				long retNumeric = -1;
-				string retString = "";
-				long remainder = 0;
 
-				long seconds = (long)_seconds;
-
-				// Try to convert to minutes
-				if (seconds >= 60) {
-					remainder = seconds % 60;
-					if (remainder == 0) {
-						retNumeric = seconds / 60;
-						retString = GetTimeUnitTypeAsString(TimeUnitTypes.Minutes);
-					}
-				}
-
-				// Try to convert to Hours
-				if (seconds >= 3600 ) {
-					remainder = seconds % 3600;
-					if (remainder == 0) {
-						retNumeric = seconds / 3600;
-						retString = GetTimeUnitTypeAsString(TimeUnitTypes.Hours);
-					}
-				}
-
-				// Try to convert to days
-				if (seconds >= 86400) {
-					remainder = seconds % 86400;
-					if (remainder == 0) {
-						retNumeric = seconds / 86400;
-						retString = GetTimeUnitTypeAsString(TimeUnitTypes.Days);
-					}
-				}
-
-
-				// Try to convert to Weeks.
-				if (seconds >= 604800) {
-					remainder = seconds % 604800;
-					if (remainder == 0) {
-						retNumeric = seconds / 604800;
-						retString = GetTimeUnitTypeAsString(TimeUnitTypes.Weeks);
-					}
-				}
-
-				if (retNumeric != -1) { return (retNumeric.ToString() + retString); }
-
-				return Value;
-			}
+		public string ValueAsWholeNumber {
+			get => GetHighestWholeNumberUnitType((long)_seconds);
 		}
 
 
@@ -231,7 +192,7 @@ namespace SlugEnt
 		/// </summary>
 		public double ValueAsNumeric
 		{
-			get { return GetUnits(_unitType); }
+			get => GetUnits(_unitType); 
 		}
 
 
@@ -529,6 +490,70 @@ namespace SlugEnt
 
 
 		/// <summary>
+		/// Returns the TimeUnit in a value that represents the largest unit value that results in a whole number.  For instance - 360 seconds would return 6m.  359 seconds would return 359 seconds.
+		/// </summary>
+		internal static string GetHighestWholeNumberUnitType (long seconds)
+		{
+			long retNumeric = -1;
+			string retString = "";
+			long remainder = 0;
+
+
+			// Try to convert to Weeks.
+			if (seconds >= 604800) {
+				remainder = seconds % 604800;
+				if (remainder == 0) {
+					retNumeric = seconds / 604800;
+					retString = GetTimeUnitTypeAsString(TimeUnitTypes.Weeks);
+					return (retNumeric.ToString() + retString);
+				}
+			}
+
+
+
+			// Try to convert to days
+			if (seconds >= 86400) {
+				remainder = seconds % 86400;
+				if (remainder == 0) {
+					retNumeric = seconds / 86400;
+					retString = GetTimeUnitTypeAsString(TimeUnitTypes.Days);
+					return (retNumeric.ToString() + retString);
+				}
+			}
+			
+
+			// Try to convert to Hours
+			if (seconds >= 3600) {
+				remainder = seconds % 3600;
+				if (remainder == 0) {
+					retNumeric = seconds / 3600;
+					retString = GetTimeUnitTypeAsString(TimeUnitTypes.Hours);
+					return (retNumeric.ToString() + retString);
+				}
+			}
+
+
+
+			// Try to convert to minutes
+			if ( seconds >= 60 ) {
+				remainder = seconds % 60;
+				if ( remainder == 0 ) {
+					retNumeric = seconds / 60;
+					retString = GetTimeUnitTypeAsString(TimeUnitTypes.Minutes);
+					return (retNumeric.ToString() + retString);
+				}
+			}
+
+
+//			if (retNumeric != -1) { return (retNumeric.ToString() + retString); }
+
+			return (seconds.ToString() + GetTimeUnitTypeAsString(TimeUnitTypes.Seconds)); 
+		}
+
+
+
+
+		/// <summary>
 		/// Adds 2 TimeUnit types together to arrive at a 3rd TimeUnit object.  Will set the TimeUnit Type property to the largest WholeNumber value it can determine.  
 		/// So, if a TimeUnit of 60s is added to a TimeUnit of 59m, will result in a TimeUnit of 1h.
 		/// </summary>
@@ -536,13 +561,9 @@ namespace SlugEnt
 		/// <param name="b">2nd TimeUnit object</param>
 		/// <returns>Result of adding the 2 TimeUnits together.</returns>
 		public static TimeUnit operator+ (TimeUnit a, TimeUnit b) {
-			TimeUnit c = new TimeUnit();
-			c._seconds = a._seconds + b._seconds;
-			string val = c.ValueAsWholeNumber;
-			int len = val.Length;
-			char timeIncrement = val[len - 1];
-			if (c.ValidateUnitTypeCharacter(timeIncrement)) { c.SetUnitTypeCharacter(timeIncrement); }
-			return c;
+			double newSeconds = a._seconds + b._seconds;
+			string newValue = GetHighestWholeNumberUnitType((long)newSeconds);
+			return (new TimeUnit(newValue));
 		}
 
 
@@ -556,6 +577,14 @@ namespace SlugEnt
 		/// <param name="b">2nd TimeUnit object</param>
 		/// <returns>Result of subtracting TimeUnit b from TimeUnit a.  Negative values all result in a value of zero.</returns>
 		public static TimeUnit operator- (TimeUnit a, TimeUnit b) {
+			double newSeconds = a._seconds - b._seconds;
+			if ( newSeconds < 0 ) { newSeconds = 0;}
+			string newValue = GetHighestWholeNumberUnitType((long)newSeconds);
+			return (new TimeUnit(newValue));
+/*
+			string newValue = GetHighestWholeNumberUnitType((long)newSeconds);
+			return (new TimeUnit(newValue));
+
 			TimeUnit c = new TimeUnit();
 			c._seconds = a._seconds - b._seconds;
 			if (c._seconds < 0) {
@@ -570,6 +599,7 @@ namespace SlugEnt
 			}
 
 			return c;
+*/
 		}
 
 
