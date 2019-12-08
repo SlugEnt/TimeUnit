@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <AssemblyVersion>1.1.1.1</AssemblyVersion>
-    <FileVersion>1.1.1.1</FileVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>1.1.2.3</AssemblyVersion>
+    <FileVersion>1.1.2.3</FileVersion>
     <Title>TimeUnit</Title>
     <PackageId>SlugEnt.TimeUnit</PackageId>
     <Authors>Scott Herrmann</Authors>
@@ -23,6 +23,6 @@
 
     <PackageReleaseNotes>Added ability to perform Implicit sets to strings and integers.</PackageReleaseNotes>
 
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
   </PropertyGroup>
 </Project>
