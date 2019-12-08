@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>1.1.2.3</AssemblyVersion>
-    <FileVersion>1.1.2.3</FileVersion>
+    <AssemblyVersion>1.1.3.7</AssemblyVersion>
+    <FileVersion>1.1.3.3</FileVersion>
     <Title>TimeUnit</Title>
     <PackageId>SlugEnt.TimeUnit</PackageId>
     <Authors>Scott Herrmann</Authors>
@@ -16,13 +16,26 @@
 
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>time;guid</PackageTags>
-    <PackageProjectUrl>https://bitbucket.org/wshpersonal/timeunit/wiki/Home</PackageProjectUrl>
-    <RepositoryUrl>https://bitbucket.org/wshpersonal/timeunit/src/master/</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/SlugEnt/TimeUnit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SlugEnt/TimeUnit</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 
-    <PackageReleaseNotes>Added ability to perform Implicit sets to strings and integers.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added xml Documentation to nuget package</PackageReleaseNotes>
 
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\A_Dev\SlugEnt\TimeUnit\TimeUnit\TimeUnit.xml</DocumentationFile>
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <UpdatePackageVersion>True</UpdatePackageVersion>
+    <PackageVersionSettings>AssemblyVersion.NoneWithAutoReset.None</PackageVersionSettings>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
   </PropertyGroup>
 </Project>
