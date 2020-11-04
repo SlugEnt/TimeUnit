@@ -69,6 +69,11 @@
             Returns the TimeUnit "native" value.  Example:  6m
             </summary>
         </member>
+        <member name="P:SlugEnt.TimeUnit.ValueAsWholeNumber">
+            <summary>
+            Returns the largest TimeUnit Value that is a whole number.  For instance 59m would return 59m.  60m would return 1h.  24h would return 1d.
+            </summary>
+        </member>
         <member name="P:SlugEnt.TimeUnit.ValueAsNumeric">
             <summary>
             Returns the numeric value of this TimeUnit.  If upon creation you specified a value of 9m (9 minutes) this function will return 9.
@@ -197,6 +202,62 @@
             </summary>
             <param name="dateTime">DateTime object to be used as the starting date and time.</param>
             <returns>Datetime object with the current TimeUnit subtracted from the datetime provided.</returns>
+        </member>
+        <member name="M:SlugEnt.TimeUnit.AddSeconds(System.Int64)">
+            <summary>
+            Add the given number of seconds to the TimeUnit
+            </summary>
+            <param name="seconds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SlugEnt.TimeUnit.AddMinutes(System.Int64)">
+            <summary>
+            Add the given number of minutes to the TimeUnit
+            </summary>
+            <param name="minutes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SlugEnt.TimeUnit.AddHours(System.Int64)">
+            <summary>
+            Add the given number of hours to the TimeUnit
+            </summary>
+            <param name="hours"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SlugEnt.TimeUnit.AddDays(System.Int64)">
+            <summary>
+            Add the given number of Days to the TimeUnit
+            </summary>
+            <param name="days"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SlugEnt.TimeUnit.SubtractSeconds(System.Int64)">
+            <summary>
+            Subtract the number of seconds to the TimeUnit
+            </summary>
+            <param name="seconds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SlugEnt.TimeUnit.SubtractMinutes(System.Int64)">
+            <summary>
+            Subtract the number of minutes to the TimeUnit
+            </summary>
+            <param name="minutes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SlugEnt.TimeUnit.SubtractHours(System.Int64)">
+            <summary>
+            Subtract the number of hours to the TimeUnit
+            </summary>
+            <param name="hours"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SlugEnt.TimeUnit.SubtractDays(System.Int64)">
+            <summary>
+            Subtract the given number of days from the TimeUnit
+            </summary>
+            <param name="days"></param>
+            <returns></returns>
         </member>
         <member name="M:SlugEnt.TimeUnit.Equals(SlugEnt.TimeUnit)">
             <summary>

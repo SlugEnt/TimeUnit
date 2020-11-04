@@ -17,6 +17,7 @@ limitations under the License.
 
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace SlugEnt {
 	/// <summary>
@@ -180,7 +181,10 @@ namespace SlugEnt {
 		}
 
 
-
+		/// <summary>
+		/// Returns the largest TimeUnit Value that is a whole number.  For instance 59m would return 59m.  60m would return 1h.  24h would return 1d.
+		/// </summary>
+		[JsonIgnore]
 		public string ValueAsWholeNumber {
 			get => GetHighestWholeNumberUnitType((long) _seconds);
 		}
@@ -190,42 +194,10 @@ namespace SlugEnt {
 		/// <summary>
 		/// Returns the numeric value of this TimeUnit.  If upon creation you specified a value of 9m (9 minutes) this function will return 9.
 		/// </summary>
+		[JsonIgnore]
 		public long ValueAsNumeric {
 			get => GetUnits(_unitType);
 		}
-
-
-/* This was never called and the field value should never be able to be changed.
-        ///  Do we want to allow changing of the unit type character or should it stay what it was when initially set.
-		/// <summary>
-		/// Sets the UnitType field to the appropriate value based upon its string representation.
-		/// It does not convert or change the seconds property.
-		/// </summary>
-		/// <param name="timeIncrement"></param>
-		private void SetUnitTypeCharacter (char timeIncrement) {
-			// Validate the unit of time is correct.
-			switch (timeIncrement) {
-				case 'd':
-					_unitType = TimeUnitTypes.Days;
-					break;
-				case 'm':
-					_unitType = TimeUnitTypes.Minutes;
-					break;
-				case 'h':
-					_unitType = TimeUnitTypes.Hours;
-					break;
-				case 's':
-					_unitType = TimeUnitTypes.Seconds;
-					break;
-				case 'w':
-					_unitType = TimeUnitTypes.Weeks;
-					break;
-				default:
-					throw new ArgumentException("Invalid TimeUnitType specified.  Must be one of s,m,h,d,w.");
-			}
-
-		}
-*/
 
 
 
@@ -302,6 +274,7 @@ namespace SlugEnt {
 		/// <summary>
 		/// Returns the number of seconds this TimeUnit represents in Double format.
 		/// </summary>
+		[JsonIgnore]
 		public double InSecondsAsDouble {
 			get { return GetUnits(TimeUnitTypes.Seconds); }
 		}
@@ -310,6 +283,7 @@ namespace SlugEnt {
 		/// <summary>
 		/// Returns the TimeUnit value as a double seconds string. IE.  125s
 		/// </summary>
+		[JsonIgnore]
 		public string InSecondsAsString {
 			get { return (InSecondsAsDouble.ToString() + "s"); }
 		}
@@ -318,6 +292,7 @@ namespace SlugEnt {
 		/// <summary>
 		/// Returns the TimeUnit in seconds format, but as a long value.
 		/// </summary>
+		[JsonIgnore]
 		public long InSecondsLong {
 			get { return (long) GetUnits(TimeUnitTypes.Seconds); }
 		}
@@ -327,6 +302,7 @@ namespace SlugEnt {
 		/// Returns the number of seconds this TimeUnit represents.
 		/// </summary>
 		/// <returns></returns>
+		[JsonIgnore]
 		public double InMinutesAsDouble {
 			get { return GetUnits(TimeUnitTypes.Minutes); }
 		}
@@ -335,6 +311,7 @@ namespace SlugEnt {
 		/// <summary>
 		///  Returns the TimeUnit in minutes as a string (ie. 6m)
 		/// </summary>
+		[JsonIgnore]
 		public string InMinutesAsString {
 			get { return (InMinutesAsDouble.ToString() + "m"); }
 		}
@@ -344,6 +321,7 @@ namespace SlugEnt {
 		/// Returns the number of seconds this TimeUnit represents.
 		/// </summary>
 		/// <returns></returns>
+		[JsonIgnore]
 		public double InHoursAsDouble {
 			get { return GetUnits(TimeUnitTypes.Hours); }
 		}
@@ -352,6 +330,7 @@ namespace SlugEnt {
 		/// <summary>
 		/// Returns the number of hours this timeunit represents as a string.  Ex.  29h
 		/// </summary>
+		[JsonIgnore]
 		public string InHoursAsString {
 			get { return (InHoursAsDouble.ToString() + "h"); }
 		}
@@ -361,6 +340,7 @@ namespace SlugEnt {
 		/// Returns the number of days this TimeUnit represents as a double.
 		/// </summary>
 		/// <returns></returns>
+		[JsonIgnore]
 		public double InDaysAsDouble {
 			get { return GetUnits(TimeUnitTypes.Days); }
 		}
@@ -369,6 +349,7 @@ namespace SlugEnt {
 		/// <summary>
 		/// Returns the number of days in string format.  Ex.  16d
 		/// </summary>
+		[JsonIgnore]
 		public string InDaysAsString {
 			get { return (InDaysAsDouble.ToString() + "d"); }
 		}
@@ -378,6 +359,7 @@ namespace SlugEnt {
 		/// Returns the number of weeks this TimeUnit represents in double form.  Ex.  6.44
 		/// </summary>
 		/// <returns></returns>
+		[JsonIgnore]
 		public double InWeeksAsDouble {
 			get { return GetUnits(TimeUnitTypes.Weeks); }
 		}
@@ -387,6 +369,7 @@ namespace SlugEnt {
 		/// Returns the number of weeks this TimeUnit represents in string form:  6.4w
 		/// </summary>
 		/// <returns></returns>
+		[JsonIgnore]
 		public string InWeeksAsString {
 			get { return (InWeeksAsDouble.ToString() + "w"); }
 		}
@@ -563,6 +546,11 @@ namespace SlugEnt {
 		#region "Math Functions"
 
 
+		/// <summary>
+		/// Add the given number of seconds to the TimeUnit
+		/// </summary>
+		/// <param name="seconds"></param>
+		/// <returns></returns>
 		public TimeUnit AddSeconds (long seconds) {
 			long calcSeconds;
 			if ( seconds < 0 ) { return SubtractSeconds(-seconds); }
@@ -573,6 +561,12 @@ namespace SlugEnt {
 		}
 
 
+
+		/// <summary>
+		/// Add the given number of minutes to the TimeUnit
+		/// </summary>
+		/// <param name="minutes"></param>
+		/// <returns></returns>
 		public TimeUnit AddMinutes (long minutes) {
 			long calcSeconds;
 			if ( minutes < 0 ) { return SubtractMinutes(-minutes); }
@@ -583,6 +577,12 @@ namespace SlugEnt {
 		}
 
 
+
+		/// <summary>
+		/// Add the given number of hours to the TimeUnit
+		/// </summary>
+		/// <param name="hours"></param>
+		/// <returns></returns>
 		public TimeUnit AddHours (long hours) {
 			long calcSeconds;
 			if ( hours < 0 ) { return SubtractHours(-hours); }
@@ -593,6 +593,12 @@ namespace SlugEnt {
 		}
 
 
+
+		/// <summary>
+		/// Add the given number of Days to the TimeUnit
+		/// </summary>
+		/// <param name="days"></param>
+		/// <returns></returns>
 		public TimeUnit AddDays (long days) {
 			long calcSeconds;
 			if ( days < 0 ) { return SubtractDays(-days); }
@@ -603,6 +609,12 @@ namespace SlugEnt {
 		}
 
 
+
+		/// <summary>
+		/// Subtract the number of seconds to the TimeUnit
+		/// </summary>
+		/// <param name="seconds"></param>
+		/// <returns></returns>
 		public TimeUnit SubtractSeconds (long seconds) {
 			double calcSeconds;
 			if ( seconds > _seconds ) { calcSeconds = 0; }
@@ -613,6 +625,11 @@ namespace SlugEnt {
 		}
 
 
+		/// <summary>
+		/// Subtract the number of minutes to the TimeUnit
+		/// </summary>
+		/// <param name="minutes"></param>
+		/// <returns></returns>
 		public TimeUnit SubtractMinutes (long minutes) {
 			long val = minutes * 60;
 			double calcSeconds;
@@ -624,6 +641,11 @@ namespace SlugEnt {
 		}
 
 
+		/// <summary>
+		/// Subtract the number of hours to the TimeUnit
+		/// </summary>
+		/// <param name="hours"></param>
+		/// <returns></returns>
 		public TimeUnit SubtractHours (long hours) {
 			double val = ConvertHoursToSeconds((double) hours);
 			double calcSeconds;
@@ -635,6 +657,11 @@ namespace SlugEnt {
 		}
 
 
+		/// <summary>
+		/// Subtract the given number of days from the TimeUnit
+		/// </summary>
+		/// <param name="days"></param>
+		/// <returns></returns>
 		public TimeUnit SubtractDays (long days) {
 			double val = ConvertDaysToSeconds((double) days);
 			double calcSeconds;
