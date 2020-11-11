@@ -592,6 +592,9 @@ using SlugEnt;
 			JObject j  = (JObject)JsonConvert.DeserializeObject(json);
 			int count = j.Count;
 			Assert.AreEqual(1,count);
+
+			TimeUnit t2 = JsonConvert.DeserializeObject<TimeUnit>(json);
+			Assert.AreEqual(t.Value,t2.Value);
         }
 
 

@@ -56,7 +56,7 @@
             <summary>
             Creates a TimeUnit object from the specified TimeUnit string value (ie. 7m or 3h).  Note, the numeric part of the TimeUnit value must be an integer number.  The suffix will define the preferred UnitType display of the object.
             </summary>
-            <param name="timeValue"></param>
+            <param name="value"></param>
         </member>
         <member name="M:SlugEnt.TimeUnit.ToString">
             <summary>

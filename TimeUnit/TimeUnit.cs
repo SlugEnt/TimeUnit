@@ -18,6 +18,7 @@ limitations under the License.
 using System;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SlugEnt {
 	/// <summary>
@@ -77,54 +78,44 @@ namespace SlugEnt {
 		}
 
 
-		/// <summary>
-		/// Takes a number of seconds (double) and turns it into a TimeUnit value stored as seconds.  Seconds will be the preferred UnitType display.
-		/// </summary>
-		/// <param name="seconds">The number of seconds the TimeUnit represents</param>
-/*		public TimeUnit(double seconds) {
-			if (seconds < 0) { throw new ArgumentException("TimeUnits cannot be negative numbers."); }
-			_seconds = seconds;
-			_unitType = TimeUnitTypes.Seconds;
-		}
-		*/
-
 
 		/// <summary>
 		/// Creates a TimeUnit object from the specified TimeUnit string value (ie. 7m or 3h).  Note, the numeric part of the TimeUnit value must be an integer number.  The suffix will define the preferred UnitType display of the object.
 		/// </summary>
-		/// <param name="timeValue"></param>
-		public TimeUnit (string timeValue) {
+		/// <param name="value"></param>
+		[JsonConstructor]
+		public TimeUnit (string value) {
 			// First get last character of string.  Must be a letter.
-			int len = timeValue.Length;
+			int len = value.Length;
 
 			// Length must be > 2.
 			if ( len < 2 ) {
 				throw new ArgumentException(
-					"timeValue", "The value of TimeValue must be in the format of <number><TimeType> Where TimeType is a single character.");
+					"value", "The value of TimeValue must be in the format of <number><TimeType> Where TimeType is a single character.");
 			}
 
-			char timeIncrement = timeValue [len - 1];
+			char timeIncrement = value [len - 1];
 
 			// Now get first part of string which is the numeric part.
-			string timeDuration = new string(timeValue.TakeWhile(d => !Char.IsLetter(d)).ToArray());
+			string timeDuration = new string(value.TakeWhile(d => !Char.IsLetter(d)).ToArray());
 
 
 			// Validate we have a number and ultimately convert into a double for storing.
 			long numericValue;
 			if ( !long.TryParse(timeDuration, out numericValue) ) {
 				throw new ArgumentException(
-					"timeValue",
+					"value",
 					"Did not contain a valid numeric prefix.  Proper format is <Number><TimeType> where Number is an integer and TimeType is a single character.");
 			}
 
 
 			// To completely validate we have what they sent we build a new string from the 2 components and compare the 2.  Should be equal.
 			string snew = numericValue.ToString() + timeIncrement;
-			if ( snew != timeValue ) {
+			if ( snew != value ) {
 				string msg = String.Format(
 					"Argument is in an invalid format - [{0}].  Proper format is <Number><TimeType> where Number is an integer and TimeType is a single character.",
-					timeValue);
-				throw new ArgumentException("timeValue", msg);
+					value);
+				throw new ArgumentException("value", msg);
 			}
 
 
