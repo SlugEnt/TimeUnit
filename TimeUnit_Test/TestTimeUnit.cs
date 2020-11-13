@@ -18,6 +18,8 @@ limitations under the License.
 using System;
 using NUnit.Framework;
 using System.Collections;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SlugEnt;
 
 
@@ -579,7 +581,24 @@ using SlugEnt;
         }
 
 
-		public class TimeUnitDataClass
+
+
+        // Validate to Json only writes Value property
+		[Test]
+        public void TestJSON () {
+			TimeUnit t = new TimeUnit("7d");
+			string json = JsonConvert.SerializeObject(t);
+
+			JObject j  = (JObject)JsonConvert.DeserializeObject(json);
+			int count = j.Count;
+			Assert.AreEqual(1,count);
+
+			TimeUnit t2 = JsonConvert.DeserializeObject<TimeUnit>(json);
+			Assert.AreEqual(t.Value,t2.Value);
+        }
+
+
+public class TimeUnitDataClass
 		{
 			public static IEnumerable TestCaseInFXString
 			{
@@ -601,6 +620,8 @@ using SlugEnt;
 					yield return new TestCaseData("168h", TimeUnitTypes.Weeks).Returns(1);
 				}
 			}
+
+
 		}
 
 	}
