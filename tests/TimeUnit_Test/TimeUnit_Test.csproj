@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <AssemblyVersion>1.0.0.51</AssemblyVersion>
+    <AssemblyVersion>1.0.0.55</AssemblyVersion>
 
     <FileVersion>1.0.0.27</FileVersion>
   </PropertyGroup>
@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TimeUnit\TimeUnit.csproj" />
+    <ProjectReference Include="..\..\src\TimeUnit\TimeUnit.csproj" />
   </ItemGroup>
+
 
 </Project>
