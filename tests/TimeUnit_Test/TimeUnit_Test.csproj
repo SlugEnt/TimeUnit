@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>false</IsPackable>
 
-    <AssemblyVersion>1.0.0.42</AssemblyVersion>
+    <AssemblyVersion>1.0.0.58</AssemblyVersion>
 
     <FileVersion>1.0.0.27</FileVersion>
   </PropertyGroup>
@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TimeUnit\TimeUnit.csproj" />
+    <ProjectReference Include="..\..\src\TimeUnit\TimeUnit.csproj" />
   </ItemGroup>
+
 
 </Project>

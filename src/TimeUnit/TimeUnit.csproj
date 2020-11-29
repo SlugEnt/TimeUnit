@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>1.1.3.7</AssemblyVersion>
-    <FileVersion>1.1.3.3</FileVersion>
+    <AssemblyVersion>1.1.5.9</AssemblyVersion>
+    <FileVersion>1.1.5.0</FileVersion>
     <Title>TimeUnit</Title>
     <PackageId>SlugEnt.TimeUnit</PackageId>
     <Authors>Scott Herrmann</Authors>
@@ -20,14 +20,13 @@
     <RepositoryUrl>https://github.com/SlugEnt/TimeUnit</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReleaseNotes>Removed many of the superfolous methods that were being output during a JSON serialize event</PackageReleaseNotes>
 
-    <PackageReleaseNotes>Added xml Documentation to nuget package</PackageReleaseNotes>
-
-    <Version>1.1.3</Version>
+    <Version>1.1.5</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\A_Dev\SlugEnt\TimeUnit\TimeUnit\TimeUnit.xml</DocumentationFile>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
@@ -37,5 +36,14 @@
     <PackageVersionSettings>AssemblyVersion.NoneWithAutoReset.None</PackageVersionSettings>
     <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
     <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <OutputPath></OutputPath>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
 </Project>
