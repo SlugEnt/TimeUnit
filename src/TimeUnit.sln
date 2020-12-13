@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E20EECF9-CC9E-485E-87D3-F2DFB0AAEC64}"
 	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeUnit_Test", "..\tests\TimeUnit_Test\TimeUnit_Test.csproj", "{36FC37F0-2A7D-406B-8AFD-ED2B4F642468}"

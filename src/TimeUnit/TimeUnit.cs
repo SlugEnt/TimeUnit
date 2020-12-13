@@ -209,7 +209,7 @@ namespace SlugEnt {
 		/// </summary>
 		/// <param name="timeIncrement">Char that should be inspected for a valid TimeUnit Type.</param>
 		/// <returns>True if valid timeIncrement character code.  False otherwise.</returns>
-		public bool ValidateUnitTypeCharacter (char timeIncrement) {
+		public static bool ValidateUnitTypeCharacter (char timeIncrement) {
 			// Validate the unit of time is correct.
 			switch ( timeIncrement ) {
 				case 'S':
@@ -239,7 +239,11 @@ namespace SlugEnt {
 		}
 
 
-		public override int GetHashCode () { return (int) _milliSeconds; }
+		/// <summary>
+		/// Returns the Hashcode for the milliseconds value
+		/// </summary>
+		/// <returns></returns>
+		public override int GetHashCode () { return _milliSeconds.GetHashCode(); }
 
 
 		// Math comparison functions
@@ -257,19 +261,18 @@ namespace SlugEnt {
 
 		#region "InFX Functions"
 
-
-		[JsonIgnore]
-		public double InMilliSecondsAsDouble {
-			get { return GetUnits(TimeUnitTypes.Milliseconds); }
-		}
-
-
+		/// <summary>
+		/// Returns the number of milliseconds this TimeUnit reporesents as a string
+		/// </summary>
 		[JsonIgnore]
 		public string InMilliSecondsAsString {
-			get { return (InMilliSecondsAsDouble.ToString() + "S"); }
+			get { return (InMilliSecondsLong.ToString() + "S"); }
 		}
 
 
+		/// <summary>
+		/// Returns the number of milli-seconds this TimeUnit represents
+		/// </summary>
 		[JsonIgnore]
 		public long InMilliSecondsLong {
 			get { return (long) GetUnits(TimeUnitTypes.Milliseconds); }
@@ -280,7 +283,7 @@ namespace SlugEnt {
 		/// </summary>
 		[JsonIgnore]
 		public double InSecondsAsDouble {
-			get { return GetUnits(TimeUnitTypes.Seconds); }
+			get { return GetUnitsAsDouble(TimeUnitTypes.Seconds); }
 		}
 
 
@@ -308,7 +311,7 @@ namespace SlugEnt {
 		/// <returns></returns>
 		[JsonIgnore]
 		public double InMinutesAsDouble {
-			get { return GetUnits(TimeUnitTypes.Minutes); }
+			get { return GetUnitsAsDouble(TimeUnitTypes.Minutes); }
 		}
 
 
@@ -327,7 +330,7 @@ namespace SlugEnt {
 		/// <returns></returns>
 		[JsonIgnore]
 		public double InHoursAsDouble {
-			get { return GetUnits(TimeUnitTypes.Hours); }
+			get { return GetUnitsAsDouble(TimeUnitTypes.Hours); }
 		}
 
 
@@ -346,7 +349,7 @@ namespace SlugEnt {
 		/// <returns></returns>
 		[JsonIgnore]
 		public double InDaysAsDouble {
-			get { return GetUnits(TimeUnitTypes.Days); }
+			get { return GetUnitsAsDouble(TimeUnitTypes.Days); }
 		}
 
 
@@ -365,7 +368,7 @@ namespace SlugEnt {
 		/// <returns></returns>
 		[JsonIgnore]
 		public double InWeeksAsDouble {
-			get { return GetUnits(TimeUnitTypes.Weeks); }
+			get { return GetUnitsAsDouble(TimeUnitTypes.Weeks); }
 		}
 
 
@@ -399,7 +402,6 @@ namespace SlugEnt {
 		/// <returns>long - The number of units of the given UnitType</returns>
 		private long GetUnits (TimeUnitTypes tuType) {
 			switch ( tuType ) {
-				case TimeUnitTypes.Milliseconds: return _milliSeconds;
 				case TimeUnitTypes.Seconds: return _milliSeconds / 1000;
 				case TimeUnitTypes.Minutes: return _milliSeconds / 60000; 
 				case TimeUnitTypes.Hours: return _milliSeconds / 3600000; 
@@ -410,6 +412,18 @@ namespace SlugEnt {
 		}
 
 
+		private double GetUnitsAsDouble (TimeUnitTypes timeUnitType) {
+			switch (timeUnitType)
+			{
+				case TimeUnitTypes.Seconds: return _milliSeconds / 1000;
+				case TimeUnitTypes.Minutes: return _milliSeconds / 60000;
+				case TimeUnitTypes.Hours: return _milliSeconds / 3600000;
+				case TimeUnitTypes.Days: return _milliSeconds / 86400000;
+				case TimeUnitTypes.Weeks: return _milliSeconds / 604800000;
+				default: return _milliSeconds;
+			}
+		}
+
 
 		/// <summary>
 		/// Returns the appropriate character representation for the TimeUnitTypes Enum value.  For example if TimeUnitTypes.Seconds returns 's'.
@@ -418,13 +432,12 @@ namespace SlugEnt {
 		/// <returns>string value of the TimeUnitType</returns>
 		public static string GetTimeUnitTypeAsString (TimeUnitTypes timeUnitType) {
 			switch ( timeUnitType ) {
-				case TimeUnitTypes.Milliseconds: return "S";
 				case TimeUnitTypes.Seconds: return "s";
 				case TimeUnitTypes.Minutes: return "m";
 				case TimeUnitTypes.Hours: return "h";
 				case TimeUnitTypes.Days: return "d";
 				case TimeUnitTypes.Weeks: return "w";
-				default: return "s";
+				default: return "S";
 			}
 		}
 
@@ -561,6 +574,22 @@ namespace SlugEnt {
 
 
 		/// <summary>
+		/// Adds the given number of milli seconds to current value
+		/// </summary>
+		/// <param name="milliSeconds">Number of milliseconds to add.  Provide negative value to subtract</param>
+		/// <returns></returns>
+		public TimeUnit AddMilliseconds (long milliSeconds) {
+			long calcSeconds;
+			if ( milliSeconds < 0 ) { return SubtractMilliSeconds(-milliSeconds); }
+			else { calcSeconds = _milliSeconds + milliSeconds; }
+
+			string newValue = GetHighestWholeNumberUnitType(calcSeconds);
+			return new TimeUnit(newValue);
+		}
+
+
+
+		/// <summary>
 		/// Add the given number of seconds to the TimeUnit
 		/// </summary>
 		/// <param name="seconds">Number of Seconds to add.  Provide negative value to subtract</param>
@@ -623,9 +652,42 @@ namespace SlugEnt {
 		}
 
 
+		/// <summary>
+		/// Add the given number of Weeks to the TimeUnit
+		/// </summary>
+		/// <param name="weeks">Number of Weeks to add.  Negative values will subtract</param>
+		/// <returns></returns>
+		public TimeUnit AddWeeks(long weeks)
+		{
+			long calcSeconds;
+			if (weeks < 0) { return SubtractWeeks(-weeks); }
+			else { calcSeconds = _milliSeconds + weeks * MILLISECONDS_IN_WEEK; }
+
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
+		}
+
+
 
 		/// <summary>
-		/// Subtract the number of seconds from the TimeUnit
+		/// Subtract the number of Milliseconds from the TimeUnit.  If the resulting value goes below 0, it is set to OS
+		/// </summary>
+		/// <param name="milliSeconds">Number of milliseconds to subtract</param>
+		/// <returns></returns>
+		public TimeUnit SubtractMilliSeconds(long milliSeconds)
+		{
+			double calcSeconds;
+			if ( milliSeconds > _milliSeconds ) { calcSeconds = 0; }
+			else { calcSeconds = _milliSeconds - milliSeconds; }
+
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
+		}
+
+
+
+		/// <summary>
+		/// Subtract the number of seconds from the TimeUnit.    If the resulting value goes below 0, it is set to OS
 		/// </summary>
 		/// <param name="seconds">Number of Seconds to subtract</param>
 		/// <returns></returns>
@@ -641,9 +703,9 @@ namespace SlugEnt {
 
 
 		/// <summary>
-		/// Subtract the number of minutes to the TimeUnit
+		/// Subtract the number of minutes to the TimeUnit.  If the resulting value goes below 0, it is set to OS
 		/// </summary>
-		/// <param name="minutes">Number of Minutes to subtract</param>
+		/// <param name="minutes">Number of Minutes to subtract.</param>
 		/// <returns></returns>
 		public TimeUnit SubtractMinutes (long minutes) {
 			long val = minutes * MILLISECONDS_IN_MINUTE;
@@ -657,7 +719,7 @@ namespace SlugEnt {
 
 
 		/// <summary>
-		/// Subtract the number of hours to the TimeUnit
+		/// Subtract the number of hours to the TimeUnit.  If the resulting value goes below 0, it is set to OS
 		/// </summary>
 		/// <param name="hours">Number of Hours to subtract</param>
 		/// <returns></returns>
@@ -673,7 +735,7 @@ namespace SlugEnt {
 
 
 		/// <summary>
-		/// Subtract the given number of days from the TimeUnit
+		/// Subtract the given number of days from the TimeUnit.  If the resulting value goes below 0, it is set to OS
 		/// </summary>
 		/// <param name="days">Number of days to subtract</param>
 		/// <returns></returns>
@@ -688,83 +750,25 @@ namespace SlugEnt {
 		}
 
 
-		#endregion
 
+		/// <summary>
+		/// Subtract the given number of weeks from the TimeUnit.  If the resulting value goes below 0, it is set to OS
+		/// </summary>
+		/// <param name="weeks">Number of weeks to subtract</param>
+		/// <returns></returns>
+		public TimeUnit SubtractWeeks(long weeks)
+		{
+			double val = weeks * MILLISECONDS_IN_WEEK;
+			double calcSeconds;
+			if (val > _milliSeconds) { calcSeconds = 0; }
+			else { calcSeconds = _milliSeconds - val; }
 
-		#region To days
-
-		// TODO Remove These - they are unused.
-		public static double ConvertMillisecondsToDays (double milliseconds) { return TimeSpan.FromMilliseconds(milliseconds).TotalDays; }
-
-		public static double ConvertSecondsToDays (double seconds) { return TimeSpan.FromSeconds(seconds).TotalDays; }
-
-		public static double ConvertMinutesToDays (double minutes) { return TimeSpan.FromMinutes(minutes).TotalDays; }
-
-		public static double ConvertHoursToDays (double hours) { return TimeSpan.FromHours(hours).TotalDays; }
-
-
-		#endregion
-
-
-		#region To hours
-
-		// TODO Remove These they are unused
-		public static double ConvertMillisecondsToHours (double milliseconds) { return TimeSpan.FromMilliseconds(milliseconds).TotalHours; }
-
-		public static double ConvertSecondsToHours (double seconds) { return TimeSpan.FromSeconds(seconds).TotalHours; }
-
-		public static double ConvertMinutesToHours (double minutes) { return TimeSpan.FromMinutes(minutes).TotalHours; }
-
-		public static double ConvertDaysToHours (double days) { return TimeSpan.FromHours(days).TotalHours; }
+			string newValue = GetHighestWholeNumberUnitType((long)calcSeconds);
+			return new TimeUnit(newValue);
+		}
 
 
 		#endregion
-
-
-		#region To minutes
-
-		// TODO Remove These they are unused
-		public static double ConvertMillisecondsToMinutes (double milliseconds) { return TimeSpan.FromMilliseconds(milliseconds).TotalMinutes; }
-
-		public static double ConvertSecondsToMinutes (double seconds) { return TimeSpan.FromSeconds(seconds).TotalMinutes; }
-
-		public static double ConvertHoursToMinutes (double hours) { return TimeSpan.FromHours(hours).TotalMinutes; }
-
-		public static double ConvertDaysToMinutes (double days) { return TimeSpan.FromDays(days).TotalMinutes; }
-
-
-		#endregion
-
-
-		#region To seconds
-
-		// TODO Remove These they are unused
-		public static double ConvertMillisecondsToSeconds (double milliseconds) { return TimeSpan.FromMilliseconds(milliseconds).TotalSeconds; }
-
-		public static double ConvertMinutesToSeconds (double minutes) { return TimeSpan.FromMinutes(minutes).TotalSeconds; }
-
-		public static double ConvertHoursToSeconds (double hours) { return TimeSpan.FromHours(hours).TotalSeconds; }
-
-		public static double ConvertDaysToSeconds (double days) { return TimeSpan.FromDays(days).TotalSeconds; }
-
-
-		#endregion
-
-
-		#region To milliseconds
-
-		// TODO Remove These they are unused
-		public static double ConvertSecondsToMilliseconds (double seconds) { return TimeSpan.FromSeconds(seconds).TotalMilliseconds; }
-
-		public static double ConvertMinutesToMilliseconds (double minutes) { return TimeSpan.FromMinutes(minutes).TotalMilliseconds; }
-
-		public static double ConvertHoursToMilliseconds (double hours) { return TimeSpan.FromHours(hours).TotalMilliseconds; }
-
-		public static double ConvertDaysToMilliseconds (double days) { return TimeSpan.FromDays(days).TotalMilliseconds; }
-
-
-		#endregion
-
 
 
 		/// <summary>
