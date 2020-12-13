@@ -5,21 +5,24 @@ assembly-informational-format: '{FullSemVer}+{ShortSha}'
 
 branches: 
   develop:
+    tag: beta
+    increment: Minor
+    regex: ^dev(elop)?[/-]
+    mode: ContinuousDeployment
+  feature:
     tag: alpha
     increment: Minor
-    regex: ^dev(elop)?(ment)?$
-  feature:
-    tag: useBranchName
-    increment: Minor
     regex: ^feature?[/-]
+    mode: ContinuousDeployment
   release:
-    tag: beta
+    tag: rc
     increment: Minor
     regex: ^release?[/-]
   hotfix:
-    tag: beta
+    tag: alpha
     regex: ^hotfix(es)?[/-]|^fix[/-]
     increment: Patch
+    mode: ContinuousDeployment
   master: 
     tag: ''
     regex: ^master$|^main$

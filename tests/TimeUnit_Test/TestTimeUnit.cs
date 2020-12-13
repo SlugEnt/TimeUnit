@@ -31,10 +31,10 @@ using SlugEnt;
 		/// </summary>
 		[Test]
 		public void CanSetSecondsCorrectly() {
-			TimeUnit tu = new TimeUnit(360);
+			TimeUnit tu = new TimeUnit(3000);
 
-			Assert.AreEqual("360s", tu.Value);
-			Assert.AreEqual("360 Seconds", tu.ToString());
+			Assert.AreEqual("3000S", tu.Value);
+			Assert.AreEqual("3000 Milliseconds", tu.ToString());
 		}
 
 
@@ -117,9 +117,9 @@ using SlugEnt;
 		/// Validates that supplying an empty constructor argument, results in an object with 0 seconds.
 		/// </summary>
 		[Test]
-		public void EmptyConstructorSetsZeroSeconds() {
+		public void EmptyConstructor_Sets_ZeroMilliSeconds() {
 			TimeUnit tu = new TimeUnit();
-			Assert.AreEqual("0s", tu.Value);
+			Assert.AreEqual("0S", tu.Value);
 		}
 
 
@@ -136,12 +136,19 @@ using SlugEnt;
 
 
 		/// <summary>
-		/// Validates that supplying a string constructor argument with a Unity Type character of more than 1 letter throws an error
+		/// Validates that supplying a string constructor argument with a Unit Type character of more than 1 letter throws an error
 		/// </summary>
+		[TestCase("4SS")]
+		[TestCase("4mm")]
+		[TestCase("4dd")]
+		[TestCase("44ww")]
+		[TestCase("655ss")]
+		[TestCase("4srt")]
+		[TestCase("4hh")]
 		[Test]
-		public void MultipleCharacter_UnitType_ResultsInError() {
+		public void MultipleCharacter_UnitType_ResultsInError(string value) {
 			Assert.Throws<ArgumentException>(() =>
-				new TimeUnit("5mm"));
+				new TimeUnit(value));
 		}
 
 
@@ -163,12 +170,13 @@ using SlugEnt;
 		/// <summary>
 		/// Validates that a non second time unit returns the correct number of seconds.
 		/// </summary>
+		[TestCase("5m",300)]
 		[Test]
-		public void CanReturnATimeUnitNumberOfSeconds() {
-			TimeUnit t = new TimeUnit("5m");
+		public void CanReturnATimeUnitNumberOfSeconds(string value, long result) {
+			TimeUnit t = new TimeUnit(value);
 
 			double secs = t.InSecondsAsDouble;
-			Assert.AreEqual(300, secs);
+			Assert.AreEqual(result, secs);
 		}
 
 
@@ -275,6 +283,7 @@ using SlugEnt;
 		[TestCase(TimeUnitTypes.Hours, "h")]
 		[TestCase(TimeUnitTypes.Minutes, "m")]
 		[TestCase(TimeUnitTypes.Seconds, "s")]
+		[TestCase(TimeUnitTypes.Milliseconds, "S")]
 		[TestCase(TimeUnitTypes.Weeks, "w")]
 		public void TimeUnitStringValues_AreCorrect(TimeUnitTypes val, string result) {
 			Assert.AreEqual(TimeUnit.GetTimeUnitTypeAsString(val), result);
@@ -291,23 +300,27 @@ using SlugEnt;
 		/// <param name="result"></param>
 
 		[Test]
-		[TestCase(60, "1m")]
-		[TestCase(180, "3m")]
-        [TestCase(600, "10m")]
-        [TestCase(3600, "1h")]
-        [TestCase(5399, "5399s")]
-        [TestCase(5400, "90m")]
-		[TestCase(7200, "2h")]
-		[TestCase(86400, "1d")]
-		[TestCase(108000, "30h")]
-		[TestCase(259200, "3d")]
-		[TestCase(604800, "1w")]
-		[TestCase(90, "90s")]
-		[TestCase(4000, "4000s")]
-		[TestCase(265000, "265000s")]
+		[TestCase(10, "10S")]
+		[TestCase(587, "587S")]
+		[TestCase(1000, "1s")]
+		[TestCase(60000, "1m")]
+		[TestCase(180000, "3m")]
+        [TestCase(600000, "10m")]
+        [TestCase(3600000, "1h")]
+        [TestCase(5399000, "5399s")]
+        [TestCase(5400000, "90m")]
+		[TestCase(7200000, "2h")]
+		[TestCase(86400000, "1d")]
+		[TestCase(108000000, "30h")]
+		[TestCase(259200000, "3d")]
+		[TestCase(604800000, "1w")]
+		[TestCase(90000, "90s")]
+		[TestCase(4000000, "4000s")]
+		[TestCase(2650000, "2650s")]
 
-		public void ValueAsWholeNumber_WorksCorrectly(long seconds, string result) {
-			TimeUnit a = new TimeUnit(seconds);
+
+		public void ValueAsWholeNumber_WorksCorrectly(long milliSeconds, string result) {
+			TimeUnit a = new TimeUnit(milliSeconds);
 			Assert.AreEqual(result, a.ValueAsWholeNumber);
 		}
 
@@ -384,34 +397,35 @@ using SlugEnt;
 
 
 		/// <summary>
-		/// Validate that Subtracting time from the TimeUnit value that results in a negative number returns zero for the TimeUnit value.
+		/// Validate that Subtracting time from the TimeUnit valueToSubtract that results in a negative number returns zero for the TimeUnit valueToSubtract.
 		/// </summary>
 		/// <param name="timeUnitValue"></param>
 		/// <param name="unit"></param>
-		/// <param name="value"></param>
+		/// <param name="valueToSubtract"></param>
 		[Test]
-		[TestCase("60m", "m", 90)]
-		[TestCase("450s", "s", 9000)]
-		[TestCase("35h", "h", 72)]
-		[TestCase("2h", "s", 7201)]
-		[TestCase("45s", "s", 47)]
-		[TestCase("10m", "s", 601)]
-		public void SubtractionFunctionsWithNegativeValues(string timeUnitValue, string unit, long value) {
+		[TestCase("60m", "m", 90000)]
+		[TestCase("450s", "s", 90000000)]
+		[TestCase("35h", "h", 720000)]
+		[TestCase("2h", "s", 7201000)]
+		[TestCase("45s", "s", 47000)]
+		[TestCase("10m", "s", 601000)]
+		[TestCase("10S", "S", 20)]
+	public void SubtractionFunctionsWithNegativeValues(string timeUnitValue, string unit, long valueToSubtract) {
 			TimeUnit a = new TimeUnit(timeUnitValue);
 			TimeUnit b;
 
 			switch (unit) {
 				case "m":
-					b = a.SubtractMinutes(value);
+					b = a.SubtractMinutes(valueToSubtract);
 					break;
 				case "d":
-					b = a.SubtractDays(value);
+					b = a.SubtractDays(valueToSubtract);
 					break;
 				case "h":
-					b = a.SubtractHours(value);
+					b = a.SubtractHours(valueToSubtract);
 					break;
 				default:
-					b = a.SubtractSeconds(value);
+					b = a.SubtractSeconds(valueToSubtract);
 					break;
 
 			}
@@ -427,30 +441,42 @@ using SlugEnt;
 		[TestCase("10d", "d", 4, "2w")]
 		[TestCase("60m", "m", 60, "2h")]
 		[TestCase("60m", "m", 90, "150m")]
-		[TestCase("60m", "m", -90,"0s")]
-		[TestCase("50s", "s", 10, "1m")]
+		[TestCase("60m", "m", -90,"0S")]
+		[TestCase("2h", "h", 13, "15h")]
+	[TestCase("50s", "s", 10, "1m")]
 		[TestCase("50s", "s", 11, "61s")]
-		[TestCase("450s", "s", -9000,"0s")]
-		[TestCase("35h", "h", -72,"0s")]
-		[TestCase("2h", "s", -7201,"0s")]
-		[TestCase("45s", "s", -47,"0s")]
-		[TestCase("10m", "s", -601,"0s")]
-
-		public void ValidateAdditionFunctions(string timeUnitValue, string unit, long value,string result) {
-			TimeUnit a = new TimeUnit(timeUnitValue);
+		[TestCase("450s", "s", -9000,"0S")]
+		[TestCase("35h", "h", -72,"0S")]
+		[TestCase("2h", "s", -7201,"0S")]
+		[TestCase("45s", "s", -47,"0S")]
+		[TestCase("10m", "s", -601,"0S")]
+		[TestCase("150S", "s", 2, "2150S")]
+		[TestCase("150S", "m", 1, "60150S")]
+		[TestCase("150S", "S", 200, "350S")]
+		[TestCase("150w", "w", 200, "350w")]
+	public void ValidateAdditionFunctions(string timeUnitvalueToAdd, string unit, long valueToAdd,string result) {
+			TimeUnit a = new TimeUnit(timeUnitvalueToAdd);
 			TimeUnit b;
 			switch (unit) {
 				case "m":
-					b = a.AddMinutes(value);
+					b = a.AddMinutes(valueToAdd);
 					break;
 				case "d":
-					b = a.AddDays(value);
+					b = a.AddDays(valueToAdd);
 					break;
 				case "h":
-					b = a.AddHours(value);
+					b = a.AddHours(valueToAdd);
+					break;
+				case "w":
+					b = a.AddWeeks(valueToAdd);
+					break;
+				case "s":
+					b = a.AddSeconds(valueToAdd);
+					break;
+				case "S": b = a.AddMilliseconds(valueToAdd);
 					break;
 				default:
-					b = a.AddSeconds(value);
+					b = a.AddSeconds(valueToAdd);
 					break;
 
 			}
@@ -458,8 +484,53 @@ using SlugEnt;
 		}
 
 
+		[TestCase("100S", "S", -1, "99S")]
+		[TestCase("100s", "s", -1, "99s")]
+		[TestCase("100m", "m", -1, "99m")]
+		[TestCase("100h", "h", -1, "99h")]
+		[TestCase("100d", "d", -1, "99d")]
+		[TestCase("100w", "w", -1, "99w")]
+		[Test]
+		public void ValidateAdditionFunctions_WithNegativeValues(string timeUnitvalueToAdd, string unit, long valueToAdd, string result)
+		{
+			TimeUnit a = new TimeUnit(timeUnitvalueToAdd);
+			TimeUnit b;
+			switch (unit)
+			{
+				case "m":
+					b = a.AddMinutes(valueToAdd);
+					break;
+				case "d":
+					b = a.AddDays(valueToAdd);
+					break;
+				case "w":
+					b = a.AddWeeks(valueToAdd);
+					break;
+				case "h":
+					b = a.AddHours(valueToAdd);
+					break;
+				case "s":
+					b = a.AddSeconds(valueToAdd);
+					break;
+				case "S":
+					b = a.AddMilliseconds(valueToAdd);
+					break;
+				default:
+					b = a.AddSeconds(valueToAdd);
+					break;
+
+			}
+			Assert.AreEqual(result, b.Value);
+		}
 
 
+	[TestCase("150S", "S", 200, "0S")]
+		[TestCase("150s", "s", 200, "0S")]
+		[TestCase("150m", "m", 200, "0S")]
+		[TestCase("150h", "h", 200, "0S")]
+		[TestCase("150d", "d", 200, "0S")]
+		[TestCase("150w", "w", 200, "0S")]
+		[TestCase("150S", "S", 6, "144S")]
 		[TestCase("10m", "m", 6, "4m")]
 		[TestCase("1h", "m", 16, "44m")]
 		[TestCase("3d", "d", 2, "1d")]
@@ -479,8 +550,14 @@ using SlugEnt;
 				case "h":
 					b = a.SubtractHours(value);
 					break;
+				case "w":
+					b = a.SubtractWeeks(value);
+					break;
+
+			case "s": b = a.SubtractSeconds(value);
+					break;
 				default:
-					b = a.SubtractSeconds(value);
+					b = a.SubtractMilliSeconds(value);
 					break;
 
 			}
@@ -510,16 +587,18 @@ using SlugEnt;
 
 		// Subtracting TimeUnit A from TimeUnit B
 		[Test]
-		[TestCase("60s", "59m", "0s")]
-		[TestCase("60s", "60s", "0s")]
+		[TestCase("60s", "59m", "0S")]
+		[TestCase("60s", "60s", "0S")]
 		[TestCase("60s", "12s", "48s")]
 		[TestCase("12m", "10m", "2m")]
 		[TestCase("23h", "1h", "22h")]
 		[TestCase("29h", "5h", "1d")]
-		[TestCase("4d", "5d", "0s")]
+		[TestCase("4d", "5d", "0S")]
 		[TestCase("24w", "5w", "19w")]
 		[TestCase("1w", "2d", "5d")]
-		public void Subtracting2TimeUnits_Success(string unitA, string unitB, string result) {
+		[TestCase("19w", "2w", "17w")]
+	[TestCase("2400S", "2000S", "400S")]
+	public void Subtracting2TimeUnits_Success(string unitA, string unitB, string result) {
 			TimeUnit a = new TimeUnit(unitA);
 			TimeUnit b = new TimeUnit(unitB);
 			TimeUnit c = a - b;
@@ -554,7 +633,7 @@ using SlugEnt;
             int time1 = 60;
             TimeUnit t1 = time1;
 
-            Assert.AreEqual(time1,t1.InSecondsLong,"A10:  Expected the number of seconds to be set to the value passed in.");
+            Assert.AreEqual(time1,t1.InMilliSecondsLong,"A10:  Expected the number of seconds to be set to the value passed in.");
         }
 
 
@@ -564,7 +643,7 @@ using SlugEnt;
             TimeUnit t1 = new TimeUnit("15m");
             int int1 = t1;
 
-            Assert.AreEqual(t1.InSecondsLong,int1,"A10:  Expected the 2 values to be the same.");
+            Assert.AreEqual(int1,t1.InMilliSecondsLong, "A10:  Expected the 2 values to be the same.");
         }
 
 
@@ -598,7 +677,192 @@ using SlugEnt;
         }
 
 
-public class TimeUnitDataClass
+
+		[TestCase(459656024430)]
+		[TestCase(19)]
+		[Test]
+        public void GetHashCode (long value) {
+	        int expected = value.GetHashCode();
+			TimeUnit x = new TimeUnit(value);
+
+			Assert.AreEqual(expected,x.GetHashCode(),"A10:");
+        }
+
+
+        [TestCase("1S", "2S", true)]
+        [TestCase("59s", "1m", true)]
+		[TestCase("12m", "1h", true)]
+        [TestCase("59m", "1h", true)]
+        [TestCase("23h", "1d", true)]
+        [TestCase("6d", "1w", true)]
+        [TestCase("12h", "1h", false)]
+        [TestCase("1100S", "1s", false)]
+		[TestCase("12h", "1h", false)]
+		[Test]
+        public void IsLessThan (string a, string b, bool isLessThan) {
+			TimeUnit timeUnit_A = new TimeUnit(a);
+			TimeUnit timeUnit_B = new TimeUnit(b);
+
+			bool actual = (timeUnit_A < timeUnit_B);
+			Assert.AreEqual(isLessThan,actual,"A10:");
+        }
+
+
+
+        [TestCase("2S", "1S", true)]
+        [TestCase("1m", "59s", true)]
+        [TestCase("1h", "12m", true)]
+        [TestCase("1h", "59m", true)]
+        [TestCase("1d", "23h", true)]
+        [TestCase("1w", "6d", true)]
+        [TestCase("1h", "12h", false)]
+        [TestCase("1s", "1100S", false)]
+        [TestCase("1h", "12h", false)]
+        [Test]
+        public void IsGreaterThan(string a, string b, bool isGreaterThan)
+        {
+	        TimeUnit timeUnit_A = new TimeUnit(a);
+	        TimeUnit timeUnit_B = new TimeUnit(b);
+
+	        bool actual = (timeUnit_A > timeUnit_B);
+	        Assert.AreEqual(isGreaterThan, actual, "A10:");
+        }
+
+
+        [TestCase("1S", "1S", true)]
+        [TestCase("1S", "1000s", true)]
+		[TestCase("59s", "59s", true)]
+        [TestCase("60s", "1m", true)]
+		[TestCase("60m", "1h", true)]
+        [TestCase("24h", "1d", true)]
+        [TestCase("7d", "1w", true)]
+        [TestCase("6d", "1w", true)]
+        [TestCase("12h", "1h", false)]
+        [TestCase("1001S", "1s", false)]
+        [TestCase("8d", "1w", false)]
+        [Test]
+        public void IsLessThanOrEqual(string a, string b, bool isLessThan)
+        {
+	        TimeUnit timeUnit_A = new TimeUnit(a);
+	        TimeUnit timeUnit_B = new TimeUnit(b);
+
+	        bool actual = (timeUnit_A <= timeUnit_B);
+	        Assert.AreEqual(isLessThan, actual, "A10:");
+        }
+
+
+        [TestCase("1S", "1S", true)]
+        [TestCase("1000S", "1s", true)]
+        [TestCase("59s", "59s", true)]
+        [TestCase("60s", "1m", true)]
+        [TestCase("60m", "1h", true)]
+        [TestCase("24h", "1d", true)]
+        [TestCase("7d", "1w", true)]
+        [TestCase("6d", "1w", false)]
+        [TestCase("1h", "12h", false)]
+        [TestCase("999S", "1s", false)]
+        [TestCase("6d", "1w", false)]
+        [Test]
+        public void IsGreaterThanOrEqual(string a, string b, bool isGreaterThan)
+        {
+	        TimeUnit timeUnit_A = new TimeUnit(a);
+	        TimeUnit timeUnit_B = new TimeUnit(b);
+
+	        bool actual = (timeUnit_A >= timeUnit_B);
+	        Assert.AreEqual(isGreaterThan, actual, "A10:");
+        }
+
+
+		[TestCase("1000S", "1s",false)]
+		[TestCase("60s", "1m", false)]
+		[TestCase("1001S", "1s", true)]
+		[TestCase("59s", "1m", true)]
+		[TestCase("2w", "14d", false)]
+		[Test]
+        public void IsNotEqual (string a, string b, bool expectedResult) {
+	        TimeUnit timeUnit_A = new TimeUnit(a);
+	        TimeUnit timeUnit_B = new TimeUnit(b);
+
+	        bool actual = (timeUnit_A != timeUnit_B);
+	        Assert.AreEqual(expectedResult, actual, "A10:");
+        }
+
+
+
+        [TestCase("1000S", "1s", true)]
+        [TestCase("60s", "1m", true)]
+        [TestCase("1001S", "1s", false)]
+        [TestCase("59s", "1m", false)]
+        [TestCase("2w", "14d", true)]
+        [Test]
+        public void IsEqual(string a, string b, bool expectedResult)
+        {
+	        TimeUnit timeUnit_A = new TimeUnit(a);
+	        TimeUnit timeUnit_B = new TimeUnit(b);
+
+	        bool actual = (timeUnit_A == timeUnit_B);
+	        Assert.AreEqual(expectedResult, actual, "A10:");
+        }
+
+
+        [TestCase("1000S", "1s", true)]
+        [TestCase("60s", "1m", true)]
+        [TestCase("1001S", "1s", false)]
+        [TestCase("59s", "1m", false)]
+        [TestCase("2w", "14d", true)]
+		[Test]
+        public void IsEquals(string a, string b, bool expectedResult)
+        {
+	        TimeUnit timeUnit_A = new TimeUnit(a);
+	        TimeUnit timeUnit_B = new TimeUnit(b);
+
+	        bool actual = (timeUnit_A.Equals(timeUnit_B));
+	        Assert.AreEqual(expectedResult, actual, "A10:");
+        }
+
+
+        [Test]
+        public void IsEquals_NonTimeUnitObject () {
+			TimeUnit a = new TimeUnit("100m");
+			Object x = new object();
+			Assert.IsFalse(a.Equals(x));
+        }
+
+		[Test]
+		public void IsEquals_NonTimeUnitObject_ThatCanBeConverted ()
+		{
+			TimeUnit a = new TimeUnit("2h");
+			string s = "120m";
+			Assert.IsTrue(a.Equals(s));
+		}
+
+
+
+
+		[TestCase('S',true)]
+		[TestCase('s', true)]
+		[TestCase('m', true)]
+		[TestCase('h', true)]
+		[TestCase('d', true)]
+		[TestCase('w', true)]
+		[TestCase('R', false)]
+		[TestCase('z', false)]
+		[Test]
+        public void ValidateUnitTypeCharacter (char unitType, bool expected) {
+	        bool actual = TimeUnit.ValidateUnitTypeCharacter(unitType);
+			Assert.AreEqual(expected,actual,"a10: invalid value");
+        }
+
+
+        [Test]
+        public void MilliSecondsAsString () {
+			TimeUnit a = new TimeUnit(100);
+			string val = a.InMilliSecondsAsString;
+			Assert.AreEqual("100S", val, "A10:");
+        }
+
+
+		public class TimeUnitDataClass
 		{
 			public static IEnumerable TestCaseInFXString
 			{
