@@ -17,6 +17,7 @@ limitations under the License.
 
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -25,7 +26,6 @@ namespace SlugEnt {
 	/// Used to represent all valid TimeUnitTypes for the TimeUnit class.
 	/// </summary>
 	public enum TimeUnitTypes : byte { Milliseconds, Seconds, Minutes, Hours, Days, Weeks };
-
 
 
 	/// <summary>
@@ -54,7 +54,8 @@ namespace SlugEnt {
 	/// <example>6m - 6 minutes</example>
 	/// <example>14h - 14 hours</example>
 	/// <example>104d - 104 days</example>
-	public struct TimeUnit : IEquatable<TimeUnit>, IComparable<TimeUnit> {
+	[Serializable]
+	public struct TimeUnit : IEquatable<TimeUnit>, IComparable<TimeUnit>, ISerializable {
 		internal const long MILLISECONDS_IN_WEEK = 604800000;
 		internal const long MILLISECONDS_IN_DAY = 86400000;
 		internal const long MILLISECONDS_IN_HOUR = 3600000;
@@ -785,6 +786,24 @@ namespace SlugEnt {
 		/// <param name="other"></param>
 		/// <returns></returns>
 		public int CompareTo (TimeUnit other) { return _milliSeconds.CompareTo(other); }
+
+
+		/// <summary>
+		/// Enable Serialization
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue("tu", this.Value);
+		}
+
+
+		public TimeUnit (SerializationInfo info, StreamingContext context) {
+			string ts = info.GetString("tu");
+			this = new TimeUnit(ts);
+		}
+
 
 
 		// Allow direct setting to/from string

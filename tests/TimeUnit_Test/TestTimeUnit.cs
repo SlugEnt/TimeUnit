@@ -18,6 +18,9 @@ limitations under the License.
 using System;
 using NUnit.Framework;
 using System.Collections;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SlugEnt;
@@ -862,7 +865,33 @@ using SlugEnt;
         }
 
 
-		public class TimeUnitDataClass
+        [TestCase("13w")]
+        [TestCase("35d")]
+        [TestCase("22h")]
+        [TestCase("1094443m")]
+        [TestCase("3s")]
+		[TestCase("559493493490653n")]
+        [Test]
+        public void Serialization_Success (string value) {
+			// Setup
+			TimeUnit a = new TimeUnit();
+			MemoryStream ms = new MemoryStream();
+			IFormatter formatter = new BinaryFormatter();
+
+			// Test
+			formatter.Serialize(ms,a);
+			ms.Position = 0;
+
+			// Validate
+			TimeUnit b = (TimeUnit) formatter.Deserialize(ms);
+
+			Assert.AreEqual(a,b,"A10: ");
+			Assert.AreEqual(a.Value, b.Value, "A20: ");
+			Assert.AreEqual(a.ValueAsNumeric, b.ValueAsNumeric, "A30: ");
+        }
+
+
+	public class TimeUnitDataClass
 		{
 			public static IEnumerable TestCaseInFXString
 			{
@@ -884,9 +913,9 @@ using SlugEnt;
 					yield return new TestCaseData("168h", TimeUnitTypes.Weeks).Returns(1);
 				}
 			}
-
-
 		}
+
+
 
 	}
 
