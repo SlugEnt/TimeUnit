@@ -1,0 +1,26 @@
+{
+  "UseCodeCoverage": true,
+  "CodeCoverageThreshold": 90,
+  "DeployProdRoot": null,
+  "DeployAlphaRoot": null,
+  "DeployBetaRoot": null,
+  "DeployDevRoot": null,
+  "DeployToVersionedFolder": true,
+  "DeployFolderUsesSemVer": true,
+  "DeployToAssemblyFolders": false,
+  "GitRemote": null,
+  "Projects": [
+    {
+      "Name": "TimeUnit_Test",
+      "Deploy": "None",
+      "Framework": "netcoreapp2.1",
+      "IsTestProject": true
+    },
+    {
+      "Name": "TimeUnit",
+      "Deploy": "Nuget",
+      "Framework": "netstandard2.0",
+      "IsTestProject": false
+    }
+  ]
+}
