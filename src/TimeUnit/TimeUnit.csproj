@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>1.1.5.23</AssemblyVersion>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyVersion>1.1.5.36</AssemblyVersion>
     <FileVersion>1.1.5.0</FileVersion>
     <Title>TimeUnit</Title>
     <PackageId>SlugEnt.TimeUnit</PackageId>
@@ -12,7 +12,7 @@
     <Description>A class for representing a unit of time in the form of a number and a suffix indicating the time period.  For Example 6s.</Description>
 
     <Copyright>Scott Herrmann 2018</Copyright>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>time;guid</PackageTags>
@@ -21,7 +21,7 @@
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>Removed many of the superfolous methods that were being output during a JSON serialize event</PackageReleaseNotes>
+    <PackageReleaseNotes>Net 5 release.  NewtonSoft replaced with System.Text.json</PackageReleaseNotes>
 
     <Version>1.1.5</Version>
   </PropertyGroup>
@@ -44,6 +44,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 </Project>
