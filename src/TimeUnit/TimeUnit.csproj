@@ -12,7 +12,7 @@
     <Description>A class for representing a unit of time in the form of a number and a suffix indicating the time period.  For Example 6s.</Description>
 
     <Copyright>Scott Herrmann 2018</Copyright>
-    <PackageLicenseExpression>MIT License</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>time;guid</PackageTags>
