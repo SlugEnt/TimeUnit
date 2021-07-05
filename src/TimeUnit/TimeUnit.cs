@@ -18,10 +18,11 @@ limitations under the License.
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace SlugEnt {
+#pragma warning disable CS1591
 	/// <summary>
 	/// Used to represent all valid TimeUnitTypes for the TimeUnit class.
 	/// </summary>
@@ -78,7 +79,7 @@ namespace SlugEnt {
 		/// <summary>
 		/// Takes a number of seconds and turns it into a TimeUnit value stored as seconds.  Seconds will be the preferred UnitType display.
 		/// </summary>
-		/// <param name="seconds">The number of seconds the TimeUnit represents</param>
+		/// <param name="milliSeconds">The number of seconds the TimeUnit represents</param>
 		public TimeUnit (long milliSeconds) {
 			if ( milliSeconds < 0 ) { throw new ArgumentException("TimeUnits cannot be negative numbers."); }
 
@@ -100,7 +101,7 @@ namespace SlugEnt {
 			// Length must be > 2.
 			if ( len < 2 ) {
 				throw new ArgumentException(
-					"value", "The value of TimeValue must be in the format of <number><TimeType> Where TimeType is a single character.");
+					 "The value of TimeValue must be in the format of <number><TimeType> Where TimeType is a single character.");
 			}
 
 			char timeIncrement = value [len - 1];
@@ -110,10 +111,8 @@ namespace SlugEnt {
 
 
 			// Validate we have a number and ultimately convert into a long for storing.
-			long numericValue;
-			if ( !long.TryParse(timeDuration, out numericValue) ) {
+			if ( !long.TryParse(timeDuration, out long numericValue) ) {
 				throw new ArgumentException(
-					"value",
 					"Did not contain a valid numeric prefix.  Proper format is <Number><TimeType> where Number is an integer and TimeType is a single character.");
 			}
 
@@ -124,7 +123,7 @@ namespace SlugEnt {
 				string msg = String.Format(
 					"Argument is in an invalid format - [{0}].  Proper format is <Number><TimeType> where Number is an integer and TimeType is a single character.",
 					value);
-				throw new ArgumentException("value", msg);
+				throw new ArgumentException(msg);
 			}
 
 
@@ -212,18 +211,11 @@ namespace SlugEnt {
 		/// <returns>True if valid timeIncrement character code.  False otherwise.</returns>
 		public static bool ValidateUnitTypeCharacter (char timeIncrement) {
 			// Validate the unit of time is correct.
-			switch ( timeIncrement ) {
-				case 'S':
-				case 's':
-				case 'm':
-				case 'h':
-				case 'd':
-				case 'w':
-					return true;
-				default: return false;
-
-				//throw new ArgumentException("Invalid TimeUnitType specified.  Must be one of s,m,h,d,w.");
-			}
+			return timeIncrement switch
+			{
+				'S' or 's' or 'm' or 'h' or 'd' or 'w' => true,
+				_ => false
+			};
 		}
 
 
@@ -402,27 +394,28 @@ namespace SlugEnt {
 		/// </summary>
 		/// <returns>long - The number of units of the given UnitType</returns>
 		private long GetUnits (TimeUnitTypes tuType) {
-			switch ( tuType ) {
-				case TimeUnitTypes.Seconds: return _milliSeconds / 1000;
-				case TimeUnitTypes.Minutes: return _milliSeconds / 60000; 
-				case TimeUnitTypes.Hours: return _milliSeconds / 3600000; 
-				case TimeUnitTypes.Days: return _milliSeconds / 86400000; 
-				case TimeUnitTypes.Weeks: return _milliSeconds / 604800000; 
-				default: return _milliSeconds;
-			}
+			return tuType switch
+			{
+				TimeUnitTypes.Seconds => _milliSeconds / 1000,
+				TimeUnitTypes.Minutes => _milliSeconds / 60000,
+				TimeUnitTypes.Hours => _milliSeconds / 3600000,
+				TimeUnitTypes.Days => _milliSeconds / 86400000,
+				TimeUnitTypes.Weeks => _milliSeconds / 604800000,
+				_ => _milliSeconds
+			};
 		}
 
 
 		private double GetUnitsAsDouble (TimeUnitTypes timeUnitType) {
-			switch (timeUnitType)
+			return timeUnitType switch
 			{
-				case TimeUnitTypes.Seconds: return _milliSeconds / 1000;
-				case TimeUnitTypes.Minutes: return _milliSeconds / 60000;
-				case TimeUnitTypes.Hours: return _milliSeconds / 3600000;
-				case TimeUnitTypes.Days: return _milliSeconds / 86400000;
-				case TimeUnitTypes.Weeks: return _milliSeconds / 604800000;
-				default: return _milliSeconds;
-			}
+				TimeUnitTypes.Seconds => _milliSeconds / 1000,
+				TimeUnitTypes.Minutes =>_milliSeconds / 60000,
+				TimeUnitTypes.Hours => _milliSeconds / 3600000,
+				TimeUnitTypes.Days => _milliSeconds / 86400000,
+				TimeUnitTypes.Weeks => _milliSeconds / 604800000,
+				_ => _milliSeconds
+			};
 		}
 
 
@@ -432,14 +425,14 @@ namespace SlugEnt {
 		/// <param name="timeUnitType">The TimeUnitType enum value to retrieve the character or string representation for.</param>
 		/// <returns>string value of the TimeUnitType</returns>
 		public static string GetTimeUnitTypeAsString (TimeUnitTypes timeUnitType) {
-			switch ( timeUnitType ) {
-				case TimeUnitTypes.Seconds: return "s";
-				case TimeUnitTypes.Minutes: return "m";
-				case TimeUnitTypes.Hours: return "h";
-				case TimeUnitTypes.Days: return "d";
-				case TimeUnitTypes.Weeks: return "w";
-				default: return "S";
-			}
+			return timeUnitType switch {
+				TimeUnitTypes.Seconds =>  "s",
+				TimeUnitTypes.Minutes => "m",
+				TimeUnitTypes.Hours => "h",
+				TimeUnitTypes.Days =>  "d",
+				TimeUnitTypes.Weeks =>  "w",
+				_ =>  "S"
+			};
 		}
 
 
@@ -450,9 +443,9 @@ namespace SlugEnt {
 		/// Returns the TimeUnit in a value that represents the largest unit value that results in a whole number.  For instance - 360 seconds would return 6m.  359 seconds would return 359 seconds.
 		/// </summary>
 		internal static string GetHighestWholeNumberUnitType (long milliSeconds) {
-			long retNumeric = -1;
-			string retString = "";
-			long remainder = 0;
+			long retNumeric;
+			string retString;
+			long remainder;
 
 
 			// Try to convert to Weeks.

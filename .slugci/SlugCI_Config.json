@@ -1,4 +1,5 @@
 {
+  "ConfigStructureVersion": "0.10.0",
   "UseCodeCoverage": true,
   "CodeCoverageThreshold": 90,
   "DeployProdRoot": null,
@@ -13,13 +14,15 @@
     {
       "Name": "TimeUnit_Test",
       "Deploy": "None",
-      "Framework": "netcoreapp2.1",
+      "HasTypeWriterScripts": false,
+      "Framework": "net5.0",
       "IsTestProject": true
     },
     {
       "Name": "TimeUnit",
       "Deploy": "Nuget",
-      "Framework": "netstandard2.0",
+      "HasTypeWriterScripts": false,
+      "Framework": "net5.0",
       "IsTestProject": false
     }
   ]
