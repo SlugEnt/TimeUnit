@@ -1,17 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <AssemblyVersion>1.1.5.36</AssemblyVersion>
-    <FileVersion>1.1.5.0</FileVersion>
-    <Title>TimeUnit</Title>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyVersion>2.10.1.0</AssemblyVersion>
+    <FileVersion>2.10.1.0</FileVersion>
+	<Version>2.10.1</Version>
+    <Title>Displays and operates on TimeUnits expressed as units of time, such  as 7d or 3w</Title>
     <PackageId>SlugEnt.TimeUnit</PackageId>
     <Authors>Scott Herrmann</Authors>
     <Company>Slug Enterprises</Company>
 
-    <Description>A class for representing a unit of time in the form of a number and a suffix indicating the time period.  For Example 6s.</Description>
+    <Description>A class for representing a unit of time in the form of a number and a suffix indicating the time period.  For Example 6s for 6 seconds.  Or 3m for 3 minutes.</Description>
 
-    <Copyright>Scott Herrmann 2018</Copyright>
+    <Copyright>Scott Herrmann 2023</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -21,9 +22,15 @@
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>Net 5 release.  NewtonSoft replaced with System.Text.json</PackageReleaseNotes>
+    <PackageReleaseNotes>Net 10 release.  No other changes</PackageReleaseNotes>
 
-    <Version>1.1.5</Version>
+    
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <AssemblyName>SlugEnt.$(MSBuildProjectName)</AssemblyName>
+
+    <RootNamespace>SlugEnt.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -44,6 +51,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>

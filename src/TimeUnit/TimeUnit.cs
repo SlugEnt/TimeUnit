@@ -18,7 +18,6 @@ limitations under the License.
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace SlugEnt {
@@ -298,11 +297,11 @@ namespace SlugEnt {
 		}
 
 
-		/// <summary>
-		/// Returns the number of Minutes this TimeUnit represents.
-		/// </summary>
-		/// <returns></returns>
-		[JsonIgnore]
+        /// <summary>
+        /// Returns the number of Minutes this TimeUnit represents.
+        /// </summary>
+        /// <returns></returns>
+        [JsonIgnore]
 		public double InMinutesAsDouble {
 			get { return GetUnitsAsDouble(TimeUnitTypes.Minutes); }
 		}
@@ -375,17 +374,31 @@ namespace SlugEnt {
 		}
 
 
-		#endregion
+        /// <summary>
+        /// Returns the TimeUnit in a TimeSpan format
+        /// </summary>
+        [JsonIgnore]
+        public TimeSpan InTimeSpan
+        {
+            get
+            {
+                TimeSpan timeSpan = new TimeSpan(0, 0, (int)GetUnits(TimeUnitTypes.Seconds));
+                return timeSpan;
+            }
+        }
 
 
-		#region "UnitType Functions"
+        #endregion
 
 
-		/// <summary>
-		/// Returns the proper Unit Type abbreviation (single letter) of the Current TimeUnit value.
-		/// </summary>
-		/// <returns>String with single character representing the Unit Type.</returns>
-		private string GetUnitTypeAbbrev () { return GetTimeUnitTypeAsString(_unitType); }
+        #region "UnitType Functions"
+
+
+        /// <summary>
+        /// Returns the proper Unit Type abbreviation (single letter) of the Current TimeUnit value.
+        /// </summary>
+        /// <returns>String with single character representing the Unit Type.</returns>
+        private string GetUnitTypeAbbrev () { return GetTimeUnitTypeAsString(_unitType); }
 
 
 
